@@ -1,0 +1,70 @@
+html {
+	font-family: "Open Sans", sans-serif;
+}
+
+body {
+	background-image: url("Images/fondo4.png");
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+}
+h1 {
+	font-size: 128;
+	font: 300%;
+	text-shadow: 4px 4px 2px black;
+	color:white
+}
+h2 {
+	font-size: 64;
+	font: 300%;
+}
+a {
+	color: white;
+	font-size: 32;
+	font: 300%;
+	text-decoration: none;
+}
+.ezkerrekoZutabea {
+	background-color: rgb(222, 183, 44, 0.2);
+	width:16%;
+	height:100%;
+	text-shadow: 4px 4px 2px black;
+	color:white
+}
+.eskuinekoZutabeak{
+	background-color: rgb(222, 183, 44, 0.2);
+	font-size: 64;
+	font: 300%;
+	text-shadow: 4px 4px 2px black;
+	color:white
+}
+button {
+	background-color: #383838;
+	border: 2px solid #000000;
+	color: white;
+	text-shadow: 1px 1px 1px black;
+	padding: 8px 32px;
+	text-align: center;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;
+	transition-duration: 0.4s;
+}
+button:hover {
+	background-color: #ffc53d;
+	color: white;
+}
+.ezkerrekoZutabea {
+	background-color: rgb(222, 183, 44, 0.2);
+	width:16%;
+	height:50%;
+	text-shadow: 4px 4px 2px black;
+	color:white
+}
+#izenburu {
+	font-size: 64;
+	font: 300%;
+	text-shadow: 4px 4px 2px black;
+	color:white
+}
