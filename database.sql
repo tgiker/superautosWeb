@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `login_register_db`
+-- Base de datos: `database`
 --
 
 -- --------------------------------------------------------
@@ -67,7 +67,7 @@ CREATE TABLE `erabiltzaileak` (
 --
 
 INSERT INTO `erabiltzaileak` (`id`, `izen_abizenak`, `nan`, `telefonoa`, `jaiotze_data`, `email`, `pasahitza`, `erabiltzaileIzena`) VALUES
-(32, 'juan belio', '79233587-J', 777888777, '2000-01-01', 'juanjuanjuan@juan.juan', 'juanbeliocalvo', 'juanbelio'),
+(32, 'juan belio', '79233587-J', 777888777, '2000-01-01', 'juanjuanjuan@juan.juan', 'juanbelio777', 'juanbelio'),
 (33, 'admin', '79183768-N', 688658788, '2000-01-01', 'tgiker@gmail.com', 'admin777', 'admin');
 
 --
