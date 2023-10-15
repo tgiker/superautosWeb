@@ -66,20 +66,32 @@ Linux + Apache + MariaDB (MySQL) + PHP 7.2 on Docker Compose. Mod_rewrite enable
 Hemen adieraziko dugu nork egin duen eta nondik atera dugun gu ez egindako kodea:
 
 SQL konexioa egiteko web orriarekin:
+
 Egilea: MagtimusPro
+
 URL: https://www.youtube.com/watch?v=veoZts7H-ZI&list=PLAFTVct4TDOa1HHObYNcGqRXsYTcCnfF4&index=2
+
 Data: 2020ko abuztuaren 7an
+
 Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
 
 Erabiltzailearen izena gordetzeko sesioan:
+
 Egilea: Rubin Porwal
+
 URL: https://stackoverflow.com/questions/41391862/how-to-access-php-session-variable-in-javascript
+
 Data: 2016ko abenduaren 30an
+
 Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
 
 NAN formatua konprobatzeko kodea:
+
 Egilea: kit
+
 URL: https://es.stackoverflow.com/questions/271449/pattern-dni-como-puedo-engancharlo-para-que-funcione
+
 Data: 2019ko ekainaren 12an
+
 Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
 
