@@ -7,9 +7,15 @@ Iker Tranchand, Iñigo Dueñas, Ander Algar, Adrián Fernández, Oier Urquijo et
 
 ## Docker bidez proiektua hedatzeko instrukzio zehatzak:
 
-(Instrukzio hauek dira docker eta git instalatuta eta konfiguratuta daudela suposatuz. Bahimen errore bat badago sudo erabili) 
+(Instrukzio hauek dira docker, docker-composite eta git instalatuta eta konfiguratuta daudela suposatuz. Bahimen errore bat badago sudo erabili) 
 
-Lehenengo superautosweb direktorioan hurrengo komandoa idatzi behar dugu: 
+Lehenengo entrega_1 irudia sortu beharko dugu superautosweb direktorioan Dockerfile fitxategia erabiliz. Horretarako superautosweb direktorio barruan gaudenean hurrengo komandoa idatzi beharko dugu: 
+```bash
+$ docker build -t entrega_1 -f ./Dockerfile .
+```
+
+Ondoren hurrengo komandoa idatziko dugu docker kontainerrak hasieratzeko:
+
 ```bash
 $ docker-compose up -d
 ```
@@ -29,12 +35,14 @@ Gero mysql sartuko gara honako hau idatziz kontsolan:
 $ mysql -u root -p
 ```
 
-Ondoren esango diogu database izeneko datu basea erabili nahi dugula:
+Komandoa jarri ondoren, pasahitza eskatuko digu. Beraz, pasahitza jarriko dugu. Pasahitza "root" da.
+
+Ondoren esango diogu "database" izeneko datu basea erabili nahi dugula:
 ```bash
 $ USE database;
 ```
 
-Gero database.sql fitxategia inportatuko dugu hau jarriz:
+Gero "database.sql" fitxategia inportatuko dugu hau jarriz:
 ```bash
 $ source database.sql;
 ```
@@ -53,4 +61,39 @@ $ docker-compose stop
 
 # Docker LAMP
 Linux + Apache + MariaDB (MySQL) + PHP 7.2 on Docker Compose. Mod_rewrite enabled by default.
+
+# Erabili dugun kodea baina gurea ez dena. 
+Hemen adieraziko dugu nork egin duen eta nondik atera dugun gu ez egindako kodea:
+
+SQL konexioa egiteko web orriarekin:
+
+Egilea: MagtimusPro
+
+URL: https://www.youtube.com/watch?v=veoZts7H-ZI&list=PLAFTVct4TDOa1HHObYNcGqRXsYTcCnfF4&index=2
+
+Data: 2020ko abuztuaren 7an
+
+Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
+
+
+Erabiltzailearen izena gordetzeko sesioan:
+
+Egilea: Rubin Porwal
+
+URL: https://stackoverflow.com/questions/41391862/how-to-access-php-session-variable-in-javascript
+
+Data: 2016ko abenduaren 30an
+
+Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
+
+
+NAN formatua konprobatzeko kodea:
+
+Egilea: kit
+
+URL: https://es.stackoverflow.com/questions/271449/pattern-dni-como-puedo-engancharlo-para-que-funcione
+
+Data: 2019ko ekainaren 12an
+
+Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
 
