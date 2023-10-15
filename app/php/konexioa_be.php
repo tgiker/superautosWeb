@@ -1,5 +1,5 @@
 <?php
     //Datu basearekin konektatuko gara
-    $konexioa = mysqli_connect("db", "admin", "test", "login_register_db");
+    $konexioa = mysqli_connect("db", "root", "root", "login_register_db");
 
 ?>
