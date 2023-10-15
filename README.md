@@ -7,7 +7,7 @@ Iker Tranchand, Iñigo Dueñas, Ander Algar, Adrián Fernández, Oier Urquijo et
 
 ## Docker bidez proiektua hedatzeko instrukzio zehatzak:
 
-(Instrukzio hauek dira docker eta git instalatuta eta konfiguratuta daudela suposatuz) 
+(Instrukzio hauek dira docker eta git instalatuta eta konfiguratuta daudela suposatuz. Bahimen errore bat badago sudo erabili) 
 
 Lehenengo superautosweb direktorioan hurrengo komandoa idatzi behar dugu: 
 ```bash
