@@ -1,6 +1,6 @@
 <?php
     //Datu basearekin konektatuko gara
 
-    $konexioa = mysqli_connect("db", "root", "root", "database");
+    $konexioa = mysqli_connect("db", "admin", "test", "database");
 
 ?>
