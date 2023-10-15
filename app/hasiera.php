@@ -1,8 +1,28 @@
 <?php
 
-	//Auto guztien informazioa gordeko ditugu
-
 	include 'php/konexioa_be.php';
+
+	//Sesioa hasiko dugu eta ondoren konprobatuko dugu erabiltzailea web sisteman sartuta dagoen edo ez.
+	session_start();
+
+	if (!isset($_SESSION['erabiltzaile'])){
+		echo '		
+			<script>
+				deslogeatu();
+			</script>
+		';
+	}
+	else{
+		$username = $_SESSION['erabiltzaile'];
+		echo "<div id='erabil' data-izena='$username'></div>";
+		echo '		
+			<script>
+				logeatu();
+			</script>
+		';
+	}
+
+	//Auto guztien informazioa gordeko ditugu
 
 	$autoa = mysqli_query($konexioa, "SELECT * FROM autoak");
 
@@ -119,30 +139,6 @@
 			</tr>
 		
 		</table>
-
-		<?php
-
-			//Sesioa hasiko dugu eta ondoren konprobatuko dugu erabiltzailea web sisteman sartuta dagoen edo ez.
-			session_start();
-
-			if (!isset($_SESSION['erabiltzaile'])){
-				echo '		
-					<script>
-						deslogeatu();
-					</script>
-				';
-			}
-			else{
-				$username = $_SESSION['erabiltzaile'];
-				echo "<div id='erabil' data-izena='$username'></div>";
-				echo '		
-					<script>
-						logeatu();
-					</script>
-				';
-			}
-
-		?>
 
 		<table class="eskuinekoZutabeak" id="taulaDefault" width=100% height=50%>
 			<!-- Taula honetan datu basean sartutako auto guztiak adieraziko diran web orrian eta bere informazioa adieraziko dugu. -->
