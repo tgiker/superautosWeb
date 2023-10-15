@@ -75,6 +75,7 @@ Data: 2020ko abuztuaren 7an
 
 Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
 
+
 Erabiltzailearen izena gordetzeko sesioan:
 
 Egilea: Rubin Porwal
@@ -84,6 +85,7 @@ URL: https://stackoverflow.com/questions/41391862/how-to-access-php-session-vari
 Data: 2016ko abenduaren 30an
 
 Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
+
 
 NAN formatua konprobatzeko kodea:
 
