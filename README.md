@@ -7,11 +7,12 @@ Iker Tranchand, Iñigo Dueñas, Ander Algar, Adrián Fernández, Oier Urquijo et
 
 ## Docker bidez proiektua hedatzeko instrukzio zehatzak:
 
-(Instrukzio hauek dira docker, docker-composite eta git instalatuta eta konfiguratuta daudela suposatuz. Bahimen errore bat badago sudo erabili) 
+(Instrukzio hauek dira docker, docker-composite eta git instalatuta eta konfiguratuta daudela suposatuz. Bahimen errore bat badago sudo erabili).
+(PHPMYADMIN-en sartzeko erabiltzailea "root" da eta pasahitza "root" da).
 
 Lehenengo entrega_1 irudia sortu beharko dugu superautosweb direktorioan Dockerfile fitxategia erabiliz. Horretarako superautosweb direktorio barruan gaudenean hurrengo komandoa idatzi beharko dugu: 
 ```bash
-$ docker build -t entrega_1 -f ./Dockerfile .
+$ docker build -t entrega_1 .
 ```
 
 Ondoren hurrengo komandoa idatziko dugu docker kontainerrak hasieratzeko:
