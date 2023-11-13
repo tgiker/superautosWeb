@@ -149,7 +149,7 @@
 			return false;
 		}
 
-		if(erabiltzaileIzena.length == 0){
+		if (erabiltzaileIzena.length == 0){
 			alert("Ez duzu ezer jarri erabiltzaile izena zatian!");
 			return false;
 		}
@@ -158,16 +158,10 @@
 			return false;
 		}
 
-		if (pasahitzaFormat.test(pasahitza)) {
-			alert("Pasahitza karaktere arraroak ditu!");
-			return false;
-		}
-		if (pasahitza.length < 8){
-			alert("Pasahitza laburregia da!");
-			return false;
-		}
-		if (pasahitza.length > 16){
-			alert("Pasahitza luzeegia da!");
+		if (!pasahitzaFormat.test(pasahitza)) {
+			alert("Pasahitza gutxienez letra larri bat," +
+			"letra xehe bat, zenbaki bat, sinbolo bat, " + 
+			"8 karaktere eta gehienez 16 karaktere izan behar ditu!");
 			return false;
 		}
 

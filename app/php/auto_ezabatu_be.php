@@ -6,13 +6,17 @@
 
     $autoId = $_POST['autoId'];
     
-    $query = "DELETE FROM autoak WHERE id = $autoId";
+    $query = "DELETE FROM autoak WHERE id = ?";
 
-    //Autoa modifikatu
+    $stmt = $konexioa->prepare($query);
 
-    $exekutatu = mysqli_query($konexioa, $query);
+    $stmt->bind_param("i", $autoId);
 
-    if ($exekutatu){
+    $stmt->execute();
+
+    //Autoa ezabatu
+
+    if ($stmt){
         echo '
         <script>
             alert("Autoa ezabatu da!");
@@ -29,6 +33,7 @@
         ';
     }
 
-    mysqli_close($konexioa);
+    $stmt->close();
+    $konexioa->close();
 
 ?>

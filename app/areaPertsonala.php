@@ -5,15 +5,20 @@
 	include 'php/konexioa_be.php';
 
 	session_start();
+	
 	if (isset($_SESSION['erabiltzaile'])){
 
 		//erabiltzailea sartuta badago bere erabiltzaile izena hartuko dugu eta ondoren bere informazioa gordeko dugu bariable ezberdinetan
 
 		$username = $_SESSION['erabiltzaile'];
 
-		$resultErabiltzaile = mysqli_query($konexioa, "SELECT * FROM erabiltzaileak WHERE erabiltzaileIzena = '$username' ");
+		$resultErabiltzaile_q = "SELECT * FROM erabiltzaileak WHERE erabiltzaileIzena = ? ";
 
-		$rows = mysqli_fetch_all($resultErabiltzaile, MYSQLI_ASSOC);
+		$resultErabiltzaile_stmt = $konexioa->prepare($resultErabiltzaile_q);
+		$resultErabiltzaile_stmt->bind_param("s", $username);
+		$resultErabiltzaile_stmt->execute();
+
+		$rows = $resultErabiltzaile_stmt->get_result();
 
 		foreach ($rows as $row){
 			$resultIzen_Abizen = $row['izen_abizenak'] ?? '';
@@ -22,6 +27,9 @@
 			$resultEmail = $row['email'] ?? '';
 			$resultNan = $row['nan'] ?? '';
 		}
+
+		$resultErabiltzaile_stmt->close();
+    	$konexioa->close();
 	}
 
 ?>
@@ -178,16 +186,10 @@
 			return false;
 		}
 
-		if (pasahitzaFormat.test(pasahitza)) {
-			alert("Pasahitza karaktere arraroak ditu!");
-			return false;
-		}
-		if (pasahitza.length < 8){
-			alert("Pasahitza laburregia da!");
-			return false;
-		}
-		if (pasahitza.length > 16){
-			alert("Pasahitza luzeegia da!");
+		if (!pasahitzaFormat.test(pasahitza)) {
+			alert("Pasahitza gutxienez letra larri bat," +
+			"letra xehe bat, zenbaki bat, sinbolo bat, " + 
+			"8 karaktere eta gehienez 16 karaktere izan behar ditu!");
 			return false;
 		}
 
