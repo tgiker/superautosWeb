@@ -11,13 +11,17 @@
     $potentzia = $_POST['potentzia'];
     $prezioa = $_POST['prezioa'];
     
-    $query = "UPDATE autoak SET irudia = '$irudia', marka = '$marka', izena = '$izena', potentzia = '$potentzia', prezioa = '$prezioa' WHERE id = $autoId";
+    $query = "UPDATE autoak SET irudia = ?, marka = ?, izena = ?, potentzia = ?, prezioa = ? WHERE id = ?";
+
+    $stmt = $konexioa->prepare($query);
+
+    $stmt->bind_param("sssiii", $irudia, $marka, $izena, $potentzia, $prezioa, $autoId);
+
+    $stmt->execute();
 
     //Autoa modifikatu
 
-    $exekutatu = mysqli_query($konexioa, $query);
-
-    if ($exekutatu){
+    if ($stmt){
         echo '
         <script>
             alert("Autoa modifikatu da!");
@@ -34,6 +38,7 @@
         ';
     }
 
-    mysqli_close($konexioa);
+    $stmt->close();
+    $konexioa->close();
 
 ?>

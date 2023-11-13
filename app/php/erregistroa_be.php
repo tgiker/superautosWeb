@@ -11,15 +11,23 @@
     $emaila = $_POST['emaila'];
     $pasahitza = $_POST['pasahitza'];
     $erabiltzaileIzena = $_POST['erabiltzaileIzena'];
+
+    //pasahitza laburtuko (hash) dugu
+    $pasahitza_hash = password_hash($pasahitza, PASSWORD_BCRYPT);
+
+    //kontsulta prestatu
     
     $query = "INSERT INTO erabiltzaileak(izen_abizenak, nan, telefonoa, jaiotze_data, email, pasahitza, erabiltzaileIzena) 
-              VALUES('$izena_abizenak', '$nan', '$telefonoa', '$jaiotze_data', '$emaila', '$pasahitza', '$erabiltzaileIzena')";
+              VALUES(?, ?, ?, ?, ?, ?, ?)";
 
     //Konprobatu erabiltzaile izena, email-a eta NAN ez direla errepikatzen datu basean
 
-    $konprobatu_erabiltzaileIzena = mysqli_query($konexioa, "SELECT * FROM erabiltzaileak WHERE erabiltzaileIzena='$erabiltzaileIzena' ");
-    $konprobatu_emaila = mysqli_query($konexioa, "SELECT * FROM erabiltzaileak WHERE email='$emaila' ");
-    $konprobatu_nan = mysqli_query($konexioa, "SELECT * FROM erabiltzaileak WHERE nan='$nan' ");
+    $konprobatu_erabiltzaileIzena_q = "SELECT * FROM erabiltzaileak WHERE erabiltzaileIzena = ?";
+
+    $konprobatu_erabiltzaileIzena_stmt = $konexioa->prepare($konprobatu_erabiltzaileIzena_q);
+    $konprobatu_erabiltzaileIzena_stmt->bind_param("s", $erabiltzaileIzena);
+    $konprobatu_erabiltzaileIzena_stmt->execute();
+    $konprobatu_erabiltzaileIzena = $konprobatu_erabiltzaileIzena_stmt->get_result();
 
     if (mysqli_num_rows($konprobatu_erabiltzaileIzena) > 0){
         echo '
@@ -30,6 +38,16 @@
         ';
         exit();
     }
+    
+    $konprobatu_erabiltzaileIzena_stmt->close();
+    
+
+    $konprobatu_emaila_q = "SELECT * FROM erabiltzaileak WHERE email = ?";
+
+    $konprobatu_emaila_stmt = $konexioa->prepare($konprobatu_emaila_q);
+    $konprobatu_emaila_stmt->bind_param("s", $emaila);
+    $konprobatu_emaila_stmt->execute();
+    $konprobatu_emaila = $konprobatu_emaila_stmt->get_result();
 
     if (mysqli_num_rows($konprobatu_emaila) > 0){
         echo '
@@ -41,6 +59,15 @@
         exit();
     }
 
+    $konprobatu_emaila_stmt->close();
+
+    $konprobatu_nan_q = "SELECT * FROM erabiltzaileak WHERE nan = ?";
+
+    $konprobatu_nan_stmt = $konexioa->prepare($konprobatu_nan_q);
+    $konprobatu_nan_stmt->bind_param("s", $nan);
+    $konprobatu_nan_stmt->execute();
+    $konprobatu_nan = $konprobatu_nan_stmt->get_result();
+
     if (mysqli_num_rows($konprobatu_nan) > 0){
         echo '
         <script>
@@ -51,11 +78,17 @@
         exit();
     }
 
+    $konprobatu_nan_stmt->close();  
+
     //Erabiltzailea erregistratu
 
-    $exekutatu = mysqli_query($konexioa, $query);
+    $stmt = $konexioa->prepare($query);
 
-    if ($exekutatu){
+    $stmt->bind_param("sssssss", $izena_abizenak, $nan, $telefonoa, $jaiotze_data, $emaila, $pasahitza_hash, $erabiltzaileIzena);
+
+    $stmt->execute();
+
+    if ($stmt){
         echo '
         <script>
             alert("Erabiltzailea erregistratu da!");
@@ -72,6 +105,9 @@
         ';
     }
 
-    mysqli_close($konexioa);
+    $stmt->close();
+    $konexioa->close();
+
+    exit();
 
 ?>

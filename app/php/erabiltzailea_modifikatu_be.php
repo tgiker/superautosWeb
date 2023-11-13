@@ -11,55 +11,123 @@
     $emaila = $_POST['emaila'];
     $pasahitza = $_POST['pasahitza'];
     $erabiltzaileIzena = $_POST['erabId'];
+
+    //pasahitza laburtuko (hash) dugu
+    $pasahitza_hash = password_hash($pasahitza, PASSWORD_BCRYPT);
+
+    //kontsulta prestatuko dugu
     
-    $query = "UPDATE erabiltzaileak SET izen_abizenak = '$izena_abizenak', nan = '$nan', 
-    telefonoa = '$telefonoa', jaiotze_data = '$jaiotze_data', 
-    email = '$emaila', pasahitza = '$pasahitza' 
-    WHERE erabiltzaileIzena = '$erabiltzaileIzena'";
+    $query = "UPDATE erabiltzaileak SET izen_abizenak = ?, nan = ?, 
+    telefonoa = ?, jaiotze_data = ?, 
+    email = ?, pasahitza = ? 
+    WHERE erabiltzaileIzena = ?";
 
     //Konprobatu email-a eta NAN ez direla errepikatzen datu basean
 
-    $konprobatu_emaila = mysqli_query($konexioa, "SELECT * FROM erabiltzaileak WHERE email='$emaila' ");
-    $konprobatu_nan = mysqli_query($konexioa, "SELECT * FROM erabiltzaileak WHERE nan='$nan' ");
+    $konprobatu_emaila_q = "SELECT email FROM erabiltzaileak WHERE erabiltzaileIzena = ?";
 
-    $resultErabiltzaile = mysqli_query($konexioa, "SELECT * FROM erabiltzaileak WHERE erabiltzaileIzena = '$erabiltzaileIzena' ");
+    $konprobatu_emaila_stmt = $konexioa->prepare($konprobatu_emaila_q);
+    $konprobatu_emaila_stmt->bind_param("s", $erabiltzaileIzena);
+    $konprobatu_emaila_stmt->execute();
+    $konprobatu_emaila_stmt->bind_result($resultEmail);    
 
-    $rows = mysqli_fetch_all($resultErabiltzaile, MYSQLI_ASSOC);
+    if ($konprobatu_emaila_stmt->fetch())
+    {
+        if ($resultEmail != $emaila)
+        {
+            $konprobatu_emaila_stmt->close();
 
-    foreach ($rows as $row){
-        $resultEmail = $row['email'] ?? '';
-        $resultNan = $row['nan'] ?? '';
+            $konprobatu_emaila_q = "SELECT * FROM erabiltzaileak WHERE email = ?";
+
+            $konprobatu_emaila_stmt = $konexioa->prepare($konprobatu_emaila_q);
+            $konprobatu_emaila_stmt->bind_param("s", $emaila);
+            $konprobatu_emaila_stmt->execute();
+            $konprobatu_emaila = $konprobatu_emaila_stmt->get_result();
+
+            $konprobatu_emaila_stmt->close();
+
+            if (mysqli_num_rows($konprobatu_emaila) > 0){
+                echo '
+                <script>
+                    alert("Ezin da erabiltzailea erregistratu. Email-a jadanik erregistratuta zegoen. Sartu beste email bat mesedez.");
+                    window.location = "../areaPertsonala.php";
+                </script>
+                ';
+                exit();
+            }
+        }
     }
+    else
+    {
+        echo '
+        <script>
+            alert("Ezin da erabiltzailea erregistratu. Saiatu geroago mesedez.");
+            window.location = "../areaPertsonala.php";
+        </script>
+        ';
+        exit();
+    }
+
+    $konprobatu_emaila_stmt->close();
+
+    //Orain NAN konprobatu
     
-    if ($resultEmail != $emaila){
-        if (mysqli_num_rows($konprobatu_emaila) > 0){
-            echo '
-            <script>
-                alert("Ezin da erabiltzailea erregistratu. Email-a jadanik erregistratuta zegoen. Sartu beste email bat mesedez.");
-                window.location = "../areaPertsonala.php";
-            </script>
-            ';
-            exit();
+    $konprobatu_nan_q = "SELECT nan FROM erabiltzaileak WHERE erabiltzaileIzena = ?";
+
+    $konprobatu_nan_stmt = $konexioa->prepare($konprobatu_nan_q);
+    $konprobatu_nan_stmt->bind_param("s", $erabiltzaileIzena);
+    $konprobatu_nan_stmt->execute();
+    $konprobatu_nan_stmt->bind_result($resultNan);
+
+    if ($konprobatu_nan_stmt->fetch())
+    {
+        if ($resultNan != $nan)
+        {
+            $konprobatu_nan_stmt->close();
+
+            $konprobatu_nan_q = "SELECT * FROM erabiltzaileak WHERE nan = ?";
+
+            $konprobatu_nan_stmt = $konexioa->prepare($konprobatu_nan_q);
+            $konprobatu_nan_stmt->bind_param("s", $nan);
+            $konprobatu_nan_stmt->execute();
+            $konprobatu_nan = $konprobatu_nan_stmt->get_result();
+
+            $konprobatu_nan_stmt->close();
+
+            if (mysqli_num_rows($konprobatu_nan) > 0)
+            {
+                echo '
+                <script>
+                    alert("Ezin da erabiltzailea erregistratu. NAN-a jadanik erregistratuta zegoen. Sartu beste NAN bat mesedez.");
+                    window.location = "../areaPertsonala.php";
+                </script>
+                ';
+                exit();
+            }
         }
     }
-
-    if ($resultNan != $nan){
-        if (mysqli_num_rows($konprobatu_nan) > 0){
-            echo '
-            <script>
-                alert("Ezin da erabiltzailea erregistratu. NAN-a jadanik erregistratuta zegoen. Sartu beste NAN bat mesedez.");
-                window.location = "../areaPertsonala.php";
-            </script>
-            ';
-            exit();
-        }
+    else
+    {
+        echo '
+        <script>
+            alert("Ezin da erabiltzailea erregistratu. Saiatu geroago mesedez.");
+            window.location = "../areaPertsonala.php";
+        </script>
+        ';
+        exit();
     }
 
+    $konprobatu_nan_stmt->close();
+    
     //Erabiltzailea modifikatu
 
-    $exekutatu = mysqli_query($konexioa, $query);
+    $stmt = $konexioa->prepare($query);
 
-    if ($exekutatu){
+    $stmt->bind_param("sssssss", $izena_abizenak, $nan, $telefonoa, $jaiotze_data, $emaila, $pasahitza_hash, $erabiltzaileIzena);
+
+    $stmt->execute();
+
+    if ($stmt){
         echo '
         <script>
             alert("Erabiltzailea modifikatu da!");
@@ -76,6 +144,9 @@
         ';
     }
 
-    mysqli_close($konexioa);
+    $stmt->close();
+    $konexioa->close();
+
+    exit();
 
 ?>
