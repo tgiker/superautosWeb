@@ -4,6 +4,21 @@
 
     include 'php/konexioa_be.php';
 
+	session_start();
+	
+	//Konprobatzen dugu administratzailea bagara
+	if (!isset($_SESSION['erabiltzaile']) || $_SESSION['erabiltzaile'] != 'admin')
+	{
+		echo'
+			<script>
+				alert("Ez dituzu pribilegiorik hemen egoteko");
+				window.location = "hasiera.php";
+			</script>
+		';
+		session_destroy();
+		die();
+	}
+
     $autoId = $_POST['autoId'];
     $resultErabiltzaile = mysqli_query($konexioa, "SELECT * FROM autoak WHERE id = '$autoId' ");
 

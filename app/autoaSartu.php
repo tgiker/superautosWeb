@@ -1,3 +1,22 @@
+<?php
+
+	//Konprobatzen dugu administratzailea bagara
+
+	session_start();
+
+	if (!isset($_SESSION['erabiltzaile']) || $_SESSION['erabiltzaile'] != 'admin')
+	{
+		echo'
+			<script>
+				alert("Ez dituzu pribilegiorik hemen egoteko");
+				window.location = "hasiera.php";
+			</script>
+		';
+		session_destroy();
+		die();
+	}
+?>
+
 <!DOCTYPE html>
 <html>
 
