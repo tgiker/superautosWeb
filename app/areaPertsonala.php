@@ -5,6 +5,19 @@
 	include 'php/konexioa_be.php';
 
 	session_start();
+
+	//Konprobatzen dugu erabiltzailea saioa hasi duela
+	if (!isset($_SESSION['erabiltzaile']))
+	{
+		echo'
+			<script>
+				alert("Mesedez saioa hasi");
+				window.location = "hasiera.php";
+			</script>
+		';
+		session_destroy();
+		die();
+	}
 	
 	if (isset($_SESSION['erabiltzaile'])){
 

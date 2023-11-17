@@ -1,3 +1,22 @@
+<?php
+
+	//Konprobatzen dugu erabiltzailea saioa hasi duela
+
+	session_start();
+
+	if (isset($_SESSION['erabiltzaile']))
+	{
+		echo'
+			<script>
+				alert("Jadanik saioa hasi zenuen!");
+				window.location = "hasiera.php";
+			</script>
+		';
+		session_destroy();
+		die();
+	}
+?>
+
 <!DOCTYPE html>
 <html>
 
