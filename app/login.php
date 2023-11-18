@@ -26,6 +26,8 @@
 		
 		<title>SUPERAUTOS</title>
 
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ajax.googleapis.com">
+
 	</head>
 
 	<body>
