@@ -15,6 +15,8 @@
 		session_destroy();
 		die();
 	}
+
+	$nonce = base64_encode(random_bytes(16));
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +28,29 @@
 		
 		<title>SUPERAUTOS</title>
 
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ajax.googleapis.com">
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-<?php echo $nonce; ?>'; style-src 'self' 'nonce-<?php echo $nonce; ?>'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://* ;"></meta>
+
+		<script nonce="<?php echo $nonce; ?>" type="text/javascript"> 
+			document.addEventListener('DOMContentLoaded', function () {
+				var buttonErregistratu = document.getElementById('buttonErregistratu');
+
+				if (buttonErregistratu) {
+					buttonErregistratu.addEventListener('click', function () {
+						validate();
+					});
+				}
+			});
+			
+			document.addEventListener('DOMContentLoaded', function () {
+				var buttonHasiera = document.getElementById('buttonHasiera');
+
+				if (buttonHasiera) {
+					buttonHasiera.addEventListener('click', function () {
+						window.location.href = 'hasiera.php';
+					});
+				}
+			});
+		</script>
 
 	</head>
 
@@ -57,8 +81,8 @@
 						ERABILTZAILE IZENA: <input type="text" id="erabiltzaileIzena" placeholder="Erabiltzaile izena jarri" name="erabiltzaileIzena"> (max: 16 karaktere) <br>
 						PASAHITZA: <input type="password" id="pasahitza" placeholder="Pasahitza jarri" name="pasahitza"> (min: 8 karaktere, max: 16 karaktere) <br>
 						
-						<button onclick="validate();" type="button"> ERREGISTRATU </button>
-						<button onclick="window.location.href = 'hasiera.php';" type="button"> HASIERARA BUELTATU </button>
+						<button id="buttonErregistratu" type="button"> ERREGISTRATU </button>
+						<button id="buttonHasiera" type="button"> HASIERARA BUELTATU </button>
 					
 					</form>
 				
@@ -74,7 +98,7 @@
 
 </html>
 
-<script>
+<script nonce="<?php echo $nonce; ?>">
 		 
 	function validate() {		
 
