@@ -20,6 +20,8 @@
 		<link rel="stylesheet" href="styles.css">
 	
 		<link href="https://fonts.googleapis.com/css2?family=Open+Sans" rel="stylesheet" type="text/css" />
+
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ajax.googleapis.com">
 	
 		<title>SUPERAUTOS</title>
 
