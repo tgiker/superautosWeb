@@ -4,6 +4,9 @@
 
     include 'konexioa_be.php';
 
+	//X-Frame-Options konfigurazioa
+	header('X-Frame-Options: DENY');
+
     //Konprobatzen dugu POST metodoa erabili dela
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //POST metodoarekin anti-CSRF token-a lortzen dugu.
