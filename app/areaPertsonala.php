@@ -44,7 +44,14 @@
     	$konexioa->close();
 	}
 
+	//nonce sortu
 	$nonce = base64_encode(random_bytes(16));
+
+	//anti-CSRF token sortu
+	$csrfToken = bin2hex(random_bytes(32));
+
+	//anti-CSRF token gorde sesioan
+	$_SESSION['csrf_token'] = $csrfToken;
 
 ?>
 
@@ -93,7 +100,7 @@
 					<!-- Formularioa egingo dugu erabiltzailearen datuak aldatzeko -->
 					
 					<form id="formularioa" action="php/erabiltzailea_modifikatu_be.php" method="POST">
-					
+					<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
 						<none><input name="erabId" id="erabId" value="<?php echo $username ?? '';?> "></input></none>
 						IZEN-ABIZENAK: <input type="text" id="izen_abizenak" placeholder="Sartu zure izen abizenak" name="izen_abizenak" value="<?php echo $resultIzen_Abizen ?? '';?>"> <br>
 						NAN: <input type="text" id="nan" placeholder="NAN-a jarri" name="nan" value="<?php echo $resultNan ?? '';?>"> (Adib:11111111-Z) <br>

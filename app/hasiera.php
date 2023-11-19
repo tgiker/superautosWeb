@@ -11,7 +11,14 @@
 
 	$rows = mysqli_fetch_all($autoa, MYSQLI_ASSOC);
 
+	//nonce sortu
 	$nonce = base64_encode(random_bytes(16));
+
+	//anti-CSRF token sortu
+	$csrfToken = bin2hex(random_bytes(32));
+
+	//anti-CSRF token gorde sesioan
+	$_SESSION['csrf_token'] = $csrfToken;
 
 ?>
 <!DOCTYPE html>
@@ -121,6 +128,7 @@
 						<!-- Erabiltzailea sisteman sartzeko formularioa da. Erabiltzailea bere erabiltzaile izena eta pasahitza sartu beharko du eta es badago erregistratuta "ERREGISTRATU" botoiari emango dio -->
 						<center> <font color=white size=8> SARBIDEA </font> </center> <br>					
 						
+						<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
 						<input type="text" name="erabiltzaileIzena" placeholder="Erabiltzaile izena jarri"> <font color=white> </font> <br>
 						<input type="password" name="pasahitza" placeholder="Pasahitza jarri"> <br>
 						
@@ -138,7 +146,7 @@
 						<form nonce="<?php echo $nonce; ?>"  action="php/deslogeatu_erabiltzailea_be.php" method="POST">
 				
 							<center> 
-							
+							<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
 							<font color=white size=8 id="logeatutaText" value="LOGEATUTA"> LOGEATUTA </font>  <br> 				
 							
 							<button type="submit"> SAIOA ITXI </button>
@@ -148,6 +156,7 @@
 						</form>
 
 						<form  nonce="<?php echo $nonce; ?>" action="areaPertsonala.php" method="POST">
+							<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
 							<center> <button type="submit"> AREA PERTSONALA </button> <br> </center>
 						</form>
 					</none>
@@ -184,9 +193,10 @@
 			<?php foreach ($rows as $row): ?>
 			<tr nonce="<?php echo $nonce; ?>" >
 			<form nonce="<?php echo $nonce; ?>"  action="autoaModifikatu.php" method="POST">
+				<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
 				<none><input nonce="<?php echo $nonce; ?>"  name="autoId" value="<?php echo $row['id']; ?>"></input></none>
-				<none><input  nonce="<?php echo $nonce; ?>" name="autoMarka" value="<?php echo $row['marka']; ?>"></input></none>
-				<none><input  nonce="<?php echo $nonce; ?>" name="autoIzena" value="<?php echo $row['izena']; ?>"></input></none>
+				<none><input nonce="<?php echo $nonce; ?>" name="autoMarka" value="<?php echo $row['marka']; ?>"></input></none>
+				<none><input nonce="<?php echo $nonce; ?>" name="autoIzena" value="<?php echo $row['izena']; ?>"></input></none>
 				<td  nonce="<?php echo $nonce; ?>" width=17% height=50%><center><img width=100% height=100% src="<?php echo $row['irudia']; ?>" /></center></td>
 				<td nonce="<?php echo $nonce; ?>"  width=16% height=50%><center><font color=white size=6><?php echo $row['marka']; ?></center></font></td>
 				<td nonce="<?php echo $nonce; ?>"  width=16% height=50%><center><font color=white size=6><?php echo $row['izena']; ?></center></font></td>

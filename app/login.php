@@ -16,7 +16,14 @@
 		die();
 	}
 
+	//nonce sortu
 	$nonce = base64_encode(random_bytes(16));
+
+	//anti-CSRF token sortu
+	$csrfToken = bin2hex(random_bytes(32));
+
+	//anti-CSRF token gorde sesioan
+	$_SESSION['csrf_token'] = $csrfToken;
 ?>
 
 <!DOCTYPE html>
@@ -76,7 +83,7 @@
 					<!-- Formularioa egingo dugu erabiltzailea erregistratzeko behar diren datuak hartzeko -->
 					
 					<form id="formularioa" action="php/erregistroa_be.php" method="POST">
-					
+					<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
 						IZEN-ABIZENAK: <input type="text" id="izen_abizenak" placeholder="Sartu zure izen abizenak" name="izen_abizenak"> <br>
 						NAN: <input type="text" id="nan" placeholder="NAN-a jarri" name="nan"> (Adib:11111111-Z) <br>
 						TELEFONOA: <input type="number" id="telefonoa" placeholder="Telefono zenbakia sartu" name="telefonoa"> (bakarrik 9 zenbaki) <br>
