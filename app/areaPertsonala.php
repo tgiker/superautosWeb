@@ -18,9 +18,8 @@
 		session_destroy();
 		die();
 	}
-	
-	if (isset($_SESSION['erabiltzaile'])){
-
+	else
+	{
 		//erabiltzailea sartuta badago bere erabiltzaile izena hartuko dugu eta ondoren bere informazioa gordeko dugu bariable ezberdinetan
 
 		$username = $_SESSION['erabiltzaile'];
@@ -45,6 +44,8 @@
     	$konexioa->close();
 	}
 
+	$nonce = base64_encode(random_bytes(16));
+
 ?>
 
 <!DOCTYPE html>
@@ -55,8 +56,15 @@
 		<link rel="stylesheet" href="loginStyles.css">
 		
 		<title>SUPERAUTOS</title>
+		
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-<?php echo $nonce; ?>'; style-src 'self' 'nonce-<?php echo $nonce; ?>' https://fonts.googleapis.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://* ;"></meta>
 
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ajax.googleapis.com">
+		<style nonce="<?php echo $nonce; ?>">
+
+		inline {display: inline;}
+		none {display: none;}
+
+		</style>
 
 	</head>
 
@@ -81,7 +89,7 @@
 					
 					<form id="formularioa" action="php/erabiltzailea_modifikatu_be.php" method="POST">
 					
-						<input name="erabId" id="erabId" value="<?php echo $username ?? '';?> " style="display:none"></input>
+						<none><input name="erabId" id="erabId" value="<?php echo $username ?? '';?> "></input></none>
 						IZEN-ABIZENAK: <input type="text" id="izen_abizenak" placeholder="Sartu zure izen abizenak" name="izen_abizenak" value="<?php echo $resultIzen_Abizen ?? '';?>"> <br>
 						NAN: <input type="text" id="nan" placeholder="NAN-a jarri" name="nan" value="<?php echo $resultNan ?? '';?>"> (Adib:11111111-Z) <br>
 						TELEFONOA: <input type="number" id="telefonoa" placeholder="Telefono zenbakia sartu" name="telefonoa" value="<?php echo $resultTelefonoa ?? '';?>"> (bakarrik 9 zenbaki) <br>
@@ -91,8 +99,8 @@
 						ERABILTZAILE IZENA: <?php echo $username ?? ''; ?> <br>
 						PASAHITZA BERRIA: <input type="password" id="pasahitza" placeholder="Pasahitza berria jarri" name="pasahitza"> (min: 8 karaktere, max: 16 karaktere) <br>
 						
-						<button onclick="validate();" type="button"> EGINDA </button>
-						<button onclick="window.location.href = 'hasiera.php';" type="button"> HASIERARA BUELTATU </button>
+						<button id="buttonEginda" type="button"> EGINDA </button>
+						<button id="buttonHasiera" type="button"> HASIERARA BUELTATU </button>
 					
 					</form>
 				
@@ -108,7 +116,8 @@
 
 </html>
 
-<script> 
+<script nonce="<?php echo $nonce; ?>"> 
+
 	function validate() {
 	
 		//Funtzio honetan konprobatuko dugu formatu guztiak betetzen direla. Horretarako formatuak eta informazioa gordeko ditugu lehenengo eta ondoren konprobaketak egingo ditugu
@@ -215,4 +224,25 @@
 
 		return true;
 	}
+
+	document.addEventListener('DOMContentLoaded', function () {
+		var buttonEginda = document.getElementById('buttonEginda');
+
+		if (buttonEginda) {
+			buttonEginda.addEventListener('click', function () {
+				validate();
+			});
+		}
+	});
+			
+	document.addEventListener('DOMContentLoaded', function () {
+		var buttonHasiera = document.getElementById('buttonHasiera');
+
+		if (buttonHasiera) {
+			buttonHasiera.addEventListener('click', function () {
+				window.location.href = 'hasiera.php';
+			});
+		}
+	});
+
 </script>

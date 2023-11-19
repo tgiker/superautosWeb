@@ -23,7 +23,7 @@
 	
 		<link href="https://fonts.googleapis.com/css2?family=Open+Sans" rel="stylesheet" type="text/css" />
 
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-<?php echo $nonce; ?>'; style-src 'self' 'nonce-<?php echo $nonce; ?>'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://* ;"></meta>
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-<?php echo $nonce; ?>'; style-src 'self' 'nonce-<?php echo $nonce; ?>' https://fonts.googleapis.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://* ;"></meta>
 	
 		<title>SUPERAUTOS</title>
 
@@ -191,7 +191,19 @@
 					//Erabiltzailea ez bada sisteman sartu ez saio ezer agertuko. 
 					if (isset($_SESSION['erabiltzaile'])){
 						if ($_SESSION['erabiltzaile'] != "admin"){
-							echo "<td nonce='$nonce' class='td-custom'><button nonce='$nonce' type='button' onclick='location.href=\"" . $row["irudia"] . "\"'>EROSI</button></td>";
+							echo "<td nonce='$nonce' class='td-custom'><button nonce='$nonce' type='button' id=\"" . $row["irudia"] . "\">EROSI</button></td>";
+							echo "<script nonce='$nonce'>
+							document.addEventListener('DOMContentLoaded', function () {
+								var buttonErosi = document.getElementById(\"" . $row["irudia"] . "\");
+				
+								if (buttonErosi) {
+									buttonErosi.addEventListener('click', function () {
+										window.location.href = \"" . $row["irudia"] . "\";
+									});
+								}
+							});
+							</script>
+							";
 						}
 						else{
 							echo "<td nonce='$nonce' class='td-custom'><button nonce='$nonce' type='submit'>MODIFIKATU</button></td>";
