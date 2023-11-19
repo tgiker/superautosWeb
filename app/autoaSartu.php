@@ -15,6 +15,9 @@
 		session_destroy();
 		die();
 	}
+
+	$nonce = base64_encode(random_bytes(16));
+
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +29,7 @@
 		
 		<title>SUPERAUTOS</title>
 
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ajax.googleapis.com">
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-<?php echo $nonce; ?>'; style-src 'self' 'nonce-<?php echo $nonce; ?>' https://fonts.googleapis.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://* ;"></meta>
 
 	</head>
 
@@ -54,8 +57,8 @@
 						POTENTZIA: <input type="number" id="potentzia" placeholder="Autoaren potentzia jarri" name="potentzia"> <br>
 						PREZIOA: <input type="number" id="prezioa" placeholder="Autoaren prezioa jarri" name="prezioa"> <br> <br>
 						
-						<button onclick="validate();" type="button"> AUTOA ERREGISTRATU </button>
-						<button onclick="window.location.href = 'hasiera.php';" type="button"> HASIERARA BUELTATU </button>
+						<button id="buttonEginda" type="button"> AUTOA ERREGISTRATU </button>
+						<button id="buttonHasiera" type="button"> HASIERARA BUELTATU </button>
 					
 					</form>
 				
@@ -71,7 +74,7 @@
 
 </html>
 
-<script>
+<script nonce="<?php echo $nonce; ?>">
 		 
 	function validate() {		
 
@@ -125,5 +128,25 @@
 
 		return true;
 	}
+
+	document.addEventListener('DOMContentLoaded', function () {
+		var buttonEginda = document.getElementById('buttonEginda');
+
+		if (buttonEginda) {
+			buttonEginda.addEventListener('click', function () {
+				validate();
+			});
+		}
+	});
+			
+	document.addEventListener('DOMContentLoaded', function () {
+		var buttonHasiera = document.getElementById('buttonHasiera');
+
+		if (buttonHasiera) {
+			buttonHasiera.addEventListener('click', function () {
+				window.location.href = 'hasiera.php';
+			});
+		}
+	});
 
 </script>

@@ -31,6 +31,8 @@
 		$resultPotentzia = $row['potentzia'] ?? '';
 		$resultPrezioa = $row['prezioa'] ?? '';
 	}
+
+	$nonce = base64_encode(random_bytes(16));
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +44,14 @@
 		
 		<title>SUPERAUTOS</title>
 
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://ajax.googleapis.com">
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-<?php echo $nonce; ?>'; style-src 'self' 'nonce-<?php echo $nonce; ?>' https://fonts.googleapis.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://* ;"></meta>
+
+		<style nonce="<?php echo $nonce; ?>">
+
+		inline {display: inline;}
+		none {display: none;}
+
+		</style>
 
 	</head>
 
@@ -64,21 +73,21 @@
 					
 					<form id="formularioa" action="php/auto_modifikatu_be.php" method="POST">
 
-                        <input name="autoId" id="autoId" value="<?php echo $autoId; ?>" style="display:none"></input>
+						<none><input name="autoId" id="autoId" value="<?php echo $autoId; ?>"></input></none>
 						IRUDIA: <input type="text" id="irudia" placeholder="Sartu irudiaren URL berria" name="irudia" value="<?php echo $resultIrudia; ?>"> <br>
 						MARKA: <input type="text" id="marka" placeholder="Autoaren marka berria jarri" name="marka" value="<?php echo $resultMarka; ?>"> <br>
 						IZENA: <input type="text" id="izena" placeholder="Autoaren izen berria jarri" name="izena" value="<?php echo $resultIzena; ?>"> <br>
 						POTENTZIA: <input type="number" id="potentzia" placeholder="Autoaren potentzia berria jarri" name="potentzia" value="<?php echo $resultPotentzia; ?>"> <br>
 						PREZIOA: <input type="number" id="prezioa" placeholder="Autoaren prezioa berria jarri" name="prezioa" value="<?php echo $resultPrezioa; ?>"> <br> <br>
 						
-						<button onclick="validate();" type="button"> AUTOA MODIFIKATU </button>
-						<button onclick="window.location.href = 'hasiera.php';" type="button"> HASIERARA BUELTATU </button>
+						<button id="buttonEginda" type="button"> AUTOA MODIFIKATU </button>
+						<button id="buttonHasiera" type="button"> HASIERARA BUELTATU </button>
 					
 					</form>
 
                     <form id="autoEzabaketaForm" action="php/auto_ezabatu_be.php" method="POST">
-                        <input name="autoId" id="autoId" value="<?php echo $autoId; ?>" style="display:none"></input>
-                        <button onclick="baieztatu();" type="button"> AUTOA EZABATU </button>
+						<none><input name="autoId" id="autoId" value="<?php echo $autoId; ?>"></input></none>
+                        <button id="buttonEzabatu" type="button"> AUTOA EZABATU </button>
                     </form>
 				
 				</td>
@@ -93,7 +102,7 @@
 
 </html>
 
-<script>
+<script nonce="<?php echo $nonce; ?>">
 		 
 	function baieztatu() {
 
@@ -158,5 +167,35 @@
 
 		return true;
 	}
+
+	document.addEventListener('DOMContentLoaded', function () {
+		var buttonEginda = document.getElementById('buttonEginda');
+
+		if (buttonEginda) {
+			buttonEginda.addEventListener('click', function () {
+				validate();
+			});
+		}
+	});
+
+	document.addEventListener('DOMContentLoaded', function () {
+		var buttonEzabatu = document.getElementById('buttonEzabatu');
+
+		if (buttonEzabatu) {
+			buttonEzabatu.addEventListener('click', function () {
+				baieztatu();
+			});
+		}
+	});
+			
+	document.addEventListener('DOMContentLoaded', function () {
+		var buttonHasiera = document.getElementById('buttonHasiera');
+
+		if (buttonHasiera) {
+			buttonHasiera.addEventListener('click', function () {
+				window.location.href = 'hasiera.php';
+			});
+		}
+	});
 
 </script>
