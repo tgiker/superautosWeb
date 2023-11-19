@@ -22,6 +22,8 @@
 
 	//X-Frame-Options konfigurazioa
 	header('X-Frame-Options: DENY');
+	//Anti-Clickjaking konfigurazioa
+	header("Content-Security-Policy: frame-ancestors 'self'");
 
 ?>
 <!DOCTYPE html>
