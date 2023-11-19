@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-10-2023 a las 14:23:00
+-- Tiempo de generación: 19-11-2023 a las 14:51:06
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `database`
+-- Base de datos: `superautos_db`
 --
 
 -- --------------------------------------------------------
@@ -41,9 +41,10 @@ CREATE TABLE `autoak` (
 --
 
 INSERT INTO `autoak` (`id`, `irudia`, `marka`, `izena`, `prezioa`, `potentzia`) VALUES
-(1, 'https://cdn.ferrari.com/cms/network/media/img/resize/5ddb97392cdb32285a799dfa-laferrari-2013-share?width=1080', 'Ferrari', 'LaFerrari', 10000000, 800),
-(2, 'https://www.lavanguardia.com/files/article_main_microformat/uploads/2023/02/07/63e24f38e851e.png', 'Bugatti', 'Veyron', 77700000, 2000),
-(5, 'https://cdn.topgear.es/sites/navi.axelspringer.es/public/media/image/2021/04/honda-civic-type-r-limited-edition-2021-2290163.jpg?tf=3840x', 'Honda', 'Civic', 50000, 300);
+(1, 'https://cdn.ferrari.com/cms/network/media/img/resize/5ddb97392cdb32285a799dfa-laferrari-2013-share?width=1080', 'Ferrari', 'LaFerrari', 1000009, 800),
+(7, 'https://media.es.wired.com/photos/6425e0e4b4e328f8839787f4/16:9/w_2560%2Cc_limit/Lamborghini-Revuelto-Featured-Gear.jpg', 'Lamborghini', 'Revuelto', 4000000, 800),
+(8, 'https://cdn.motor1.com/images/mgl/kvjPR/s3/2022-porsche-911-carrera-gts-front-3-4.jpg', 'Porsche', 'Porsche 911', 125000, 400),
+(9, 'https://phantom-marca.unidadeditorial.es/cbec612a0857bfb6ee71347d19b2f8bf/resize/828/f/jpg/assets/multimedia/imagenes/2020/10/23/16034683855922.jpg', 'Bugatti', 'Divo', 90000000, 800);
 
 -- --------------------------------------------------------
 
@@ -58,7 +59,7 @@ CREATE TABLE `erabiltzaileak` (
   `telefonoa` int(9) NOT NULL,
   `jaiotze_data` varchar(30) NOT NULL,
   `email` varchar(50) NOT NULL,
-  `pasahitza` varchar(16) NOT NULL,
+  `pasahitza` varchar(70) NOT NULL,
   `erabiltzaileIzena` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
@@ -67,8 +68,8 @@ CREATE TABLE `erabiltzaileak` (
 --
 
 INSERT INTO `erabiltzaileak` (`id`, `izen_abizenak`, `nan`, `telefonoa`, `jaiotze_data`, `email`, `pasahitza`, `erabiltzaileIzena`) VALUES
-(32, 'juan belio', '79233587-J', 777888777, '2000-01-01', 'juanjuanjuan@juan.juan', 'juanbelio777', 'juanbelio'),
-(33, 'admin', '79183768-N', 688658788, '2000-01-01', 'tgiker@gmail.com', 'admin777', 'admin');
+(42, 'admin', '79183768-N', 688688688, '2000-01-01', 'admin@admin.admin', '$2y$10$/2cMj1efPEYyVnvMnGRwtOPoQOlA9Xj7vaAxJiy9ifkfUFr5v.yj.', 'admin'),
+(43, 'juanbelio', '79233587-J', 688688688, '2000-01-01', 'juanbelio@gmail.com', '$2y$10$YEpfbKTv2D764qg0.9UUju1u6O4hu1YNr2/zycQUubeBY9J5m5b5C', 'juanbelio');
 
 --
 -- Índices para tablas volcadas
@@ -94,13 +95,13 @@ ALTER TABLE `erabiltzaileak`
 -- AUTO_INCREMENT de la tabla `autoak`
 --
 ALTER TABLE `autoak`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `erabiltzaileak`
 --
 ALTER TABLE `erabiltzaileak`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
