@@ -23,7 +23,12 @@
 	
 		<link href="https://fonts.googleapis.com/css2?family=Open+Sans" rel="stylesheet" type="text/css" />
 
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-<?php echo $nonce; ?>'; style-src 'self' 'nonce-<?php echo $nonce; ?>' https://fonts.googleapis.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://* ;"></meta>
+		<meta http-equiv="Content-Security-Policy" 
+		content="default-src 'self'; script-src 'self' 'nonce-<?php echo $nonce; ?>'; 
+		style-src 'self' 'nonce-<?php echo $nonce; ?>' https://fonts.googleapis.com; 
+		font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; 
+		img-src 'self' data: https://*; 
+		form-action 'self';">
 	
 		<title>SUPERAUTOS</title>
 
