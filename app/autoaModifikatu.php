@@ -32,7 +32,14 @@
 		$resultPrezioa = $row['prezioa'] ?? '';
 	}
 
+	//nonce sortu
 	$nonce = base64_encode(random_bytes(16));
+
+	//anti-CSRF token sortu
+	$csrfToken = bin2hex(random_bytes(32));
+
+	//anti-CSRF token gorde sesioan
+	$_SESSION['csrf_token'] = $csrfToken;
 ?>
 
 <!DOCTYPE html>
@@ -77,7 +84,7 @@
 					<!-- Formularioa egingo dugu autoaren datuak aldatzeko -->
 					
 					<form id="formularioa" action="php/auto_modifikatu_be.php" method="POST">
-
+					<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
 						<none><input name="autoId" id="autoId" value="<?php echo $autoId; ?>"></input></none>
 						IRUDIA: <input type="text" id="irudia" placeholder="Sartu irudiaren URL berria" name="irudia" value="<?php echo $resultIrudia; ?>"> <br>
 						MARKA: <input type="text" id="marka" placeholder="Autoaren marka berria jarri" name="marka" value="<?php echo $resultMarka; ?>"> <br>
@@ -91,6 +98,7 @@
 					</form>
 
                     <form id="autoEzabaketaForm" action="php/auto_ezabatu_be.php" method="POST">
+						<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">	
 						<none><input name="autoId" id="autoId" value="<?php echo $autoId; ?>"></input></none>
                         <button id="buttonEzabatu" type="button"> AUTOA EZABATU </button>
                     </form>
