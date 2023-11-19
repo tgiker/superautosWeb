@@ -25,6 +25,9 @@
 	//anti-CSRF token gorde sesioan
 	$_SESSION['csrf_token'] = $csrfToken;
 
+	//X-Frame-Options konfigurazioa
+	header('X-Frame-Options: DENY');
+
 ?>
 
 <!DOCTYPE html>
