@@ -1,5 +1,8 @@
 <?php
     //Datu basearekin konektatuko gara
-    $konexioa = mysqli_connect("db", "admin", "test", "database");
+
+    include 'konexio_aldagaiak.php';
+
+    $konexioa = mysqli_connect($db_config['host'], $db_config['erabiltzailea'], $db_config['pasahitza'], $db_config['datubase_izena']);
 
 ?>
