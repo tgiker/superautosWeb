@@ -98,3 +98,24 @@ Data: 2019ko ekainaren 12an
 
 Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
 
+
+
+
+Cambios punto 5:
+
+en el archivo /etc/apache2/apache2.conf:
+
+ServerTokens Prod
+ServerSignature Off
+
+
+en el archivo /var/www/html/.htaccess (hay que crearlo):
+
+<IfModule mod_headers.c>
+Header always set Strict-Transport-Security "max-age=31536000"; preload
+</IfModule>
+Header set X-Content-Type-Options "nosniff"
+
+
+
+
