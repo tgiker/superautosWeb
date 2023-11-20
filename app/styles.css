@@ -68,3 +68,8 @@ button:hover {
 	text-shadow: 4px 4px 2px black;
 	color:white
 }
+.td-custom {
+    width: 16%;
+    height: 50%;
+    text-align: center;
+}

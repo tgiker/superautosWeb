@@ -6,8 +6,6 @@
 
 	//X-Frame-Options konfigurazioa
 	header('X-Frame-Options: DENY');
-	//Anti-Clickjaking konfigurazioa
-	header("Content-Security-Policy: frame-ancestors 'self'");
 
     //Konprobatzen dugu POST metodoa erabili dela
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -24,6 +22,12 @@
             $erabiltzaileIzena = $_POST['erabiltzaileIzena'];
             $pasahitza = $_POST['pasahitza'];
 
+            //nonce sortu
+            $nonce = base64_encode(random_bytes(16));
+
+            //CSP konfigurazioa
+	        header("Content-Security-Policy: script-src 'self' 'nonce-$nonce'; style-src 'self' 'nonce-$nonce' https://fonts.googleapis.com; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: https://*; connect-src 'self'; frame-src 'self'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self'; object-src 'self'; manifest-src 'self';");
+
             //Konprobatuko dugu erabiltzailea eta pasahitza bat etortzen diren
 
             $pasahitza_hash_q = "SELECT pasahitza FROM erabiltzaileak WHERE erabiltzaileIzena=?";
@@ -35,28 +39,28 @@
             if ($stmt->fetch()) {
                 if (password_verify($pasahitza, $pasahitza_hash)){
                     $_SESSION['erabiltzaile'] = $erabiltzaileIzena;
-                    echo '
-                    <script>
-                        window.location = "../hasiera.php";
+                    echo "
+                    <script nonce='$nonce'>
+                        window.location = '../hasiera.php';
                     </script>
-                    ';
+                    ";
                 }
                 else{
-                    echo '
-                    <script>
-                        alert("Erabiltzaile izena eta pasahitza ez datoz bat");
-                        window.location = "../hasiera.php";
+                    echo "
+                    <script nonce='$nonce'>
+                        alert('Erabiltzaile izena eta pasahitza ez datoz bat');
+                        window.location = '../hasiera.php';
                     </script>
-                    ';
+                    ";
                     
                 }
             } else {
-                echo '
-                    <script>
-                        alert("Erabiltzaile izena eta pasahitza ez datoz bat");
-                        window.location = "../hasiera.php";
+                echo "
+                    <script nonce='$nonce'>
+                        alert('Erabiltzaile izena eta pasahitza ez datoz bat');
+                        window.location = '../hasiera.php';
                     </script>
-                    ';
+                    ";
             }
 
             $stmt->close();

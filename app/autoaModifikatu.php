@@ -5,16 +5,22 @@
     include 'php/konexioa_be.php';
 
 	session_start();
+
+	//nonce sortu
+	$nonce = base64_encode(random_bytes(16));
+
+	//CSP konfigurazioa
+	header("Content-Security-Policy: script-src 'self' 'nonce-$nonce'; style-src 'self' 'nonce-$nonce' https://fonts.googleapis.com; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: https://*; connect-src 'self'; frame-src 'self'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self'; object-src 'self'; manifest-src 'self';");
 	
 	//Konprobatzen dugu administratzailea bagara
 	if (!isset($_SESSION['erabiltzaile']) || $_SESSION['erabiltzaile'] != 'admin')
 	{
-		echo'
-			<script>
-				alert("Ez dituzu pribilegiorik hemen egoteko");
-				window.location = "hasiera.php";
+		echo"
+			<script nonce='$nonce'>
+				alert('Ez dituzu pribilegiorik hemen egoteko');
+				window.location = 'hasiera.php';
 			</script>
-		';
+		";
 		session_destroy();
 		die();
 	}
@@ -32,9 +38,6 @@
 		$resultPrezioa = $row['prezioa'] ?? '';
 	}
 
-	//nonce sortu
-	$nonce = base64_encode(random_bytes(16));
-
 	//anti-CSRF token sortu
 	$csrfToken = bin2hex(random_bytes(32));
 
@@ -43,8 +46,6 @@
 
 	//X-Frame-Options konfigurazioa
 	header('X-Frame-Options: DENY');
-	//Anti-Clickjaking konfigurazioa
-	header("Content-Security-Policy: frame-ancestors 'self'");
 ?>
 
 <!DOCTYPE html>
