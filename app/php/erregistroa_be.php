@@ -6,8 +6,6 @@
 
 	//X-Frame-Options konfigurazioa
 	header('X-Frame-Options: DENY');
-	//Anti-Clickjaking konfigurazioa
-	header("Content-Security-Policy: frame-ancestors 'self'");
 
     //Konprobatzen dugu POST metodoa erabili dela
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -30,6 +28,12 @@
             $pasahitza = $_POST['pasahitza'];
             $erabiltzaileIzena = $_POST['erabiltzaileIzena'];
 
+            //nonce sortu
+            $nonce = base64_encode(random_bytes(16));
+
+            //CSP konfigurazioa
+	        header("Content-Security-Policy: script-src 'self' 'nonce-$nonce'; style-src 'self' 'nonce-$nonce' https://fonts.googleapis.com; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: https://*; connect-src 'self'; frame-src 'self'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self'; object-src 'self'; manifest-src 'self';");
+
             //pasahitza laburtuko (hash) dugu
             $pasahitza_hash = password_hash($pasahitza, PASSWORD_BCRYPT);
 
@@ -48,12 +52,12 @@
             $konprobatu_erabiltzaileIzena = $konprobatu_erabiltzaileIzena_stmt->get_result();
 
             if (mysqli_num_rows($konprobatu_erabiltzaileIzena) > 0){
-                echo '
-                <script>
-                    alert("Ezin da erabiltzailea erregistratu. Erabiltzaile izena jadanik erregistratuta zegoen. Sartu beste erabiltzaile izen bat mesedez.");
-                    window.location = "../login.php";
+                echo "
+                <script nonce='$nonce'>
+                    alert('Ezin da erabiltzailea erregistratu. Erabiltzaile izena jadanik erregistratuta zegoen. Sartu beste erabiltzaile izen bat mesedez.');
+                    window.location = '../login.php';
                 </script>
-                ';
+                ";
                 exit();
             }
             
@@ -68,12 +72,12 @@
             $konprobatu_emaila = $konprobatu_emaila_stmt->get_result();
 
             if (mysqli_num_rows($konprobatu_emaila) > 0){
-                echo '
-                <script>
-                    alert("Ezin da erabiltzailea erregistratu. Email-a jadanik erregistratuta zegoen. Sartu beste email bat mesedez.");
-                    window.location = "../login.php";
+                echo "
+                <script nonce='$nonce'>
+                    alert('Ezin da erabiltzailea erregistratu. Email-a jadanik erregistratuta zegoen. Sartu beste email bat mesedez.');
+                    window.location = '../login.php';
                 </script>
-                ';
+                ";
                 exit();
             }
 
@@ -87,12 +91,12 @@
             $konprobatu_nan = $konprobatu_nan_stmt->get_result();
 
             if (mysqli_num_rows($konprobatu_nan) > 0){
-                echo '
-                <script>
-                    alert("Ezin da erabiltzailea erregistratu. NAN-a jadanik erregistratuta zegoen. Sartu beste NAN bat mesedez.");
-                    window.location = "../login.php";
+                echo "
+                <script nonce='$nonce'>
+                    alert('Ezin da erabiltzailea erregistratu. NAN-a jadanik erregistratuta zegoen. Sartu beste NAN bat mesedez.');
+                    window.location = '../login.php';
                 </script>
-                ';
+                ";
                 exit();
             }
 
@@ -107,20 +111,20 @@
             $stmt->execute();
 
             if ($stmt){
-                echo '
-                <script>
-                    alert("Erabiltzailea erregistratu da!");
-                    window.location = "../hasiera.php";
+                echo "
+                <script nonce='$nonce'>
+                    alert('Erabiltzailea erregistratu da!');
+                    window.location = '../hasiera.php';
                 </script>
-                ';
+                ";
             }
             else{
-                echo '
-                <script>
-                    alert("Ezin da erabiltzailea erregistratu. Saiatu berriro geroago");
-                    window.location = "../login.php";
+                echo "
+                <script nonce='$nonce'>
+                    alert('Ezin da erabiltzailea erregistratu. Saiatu berriro geroago');
+                    window.location = '../login.php';
                 </script>
-                ';
+                ";
             }
 
             $stmt->close();
