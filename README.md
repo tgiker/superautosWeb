@@ -103,18 +103,21 @@ Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak iza
 
 Cambios punto 5:
 
-en el archivo /etc/apache2/apache2.conf:
+en el archivo httpd.conf:
 
 ServerTokens Prod
 ServerSignature Off
 
-
-en el archivo /var/www/html/.htaccess (hay que crearlo):
-
 <IfModule mod_headers.c>
-Header always set Strict-Transport-Security "max-age=31536000"; preload
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
 </IfModule>
-Header set X-Content-Type-Options "nosniff"
+
+<VirtualHost *:80>
+    # Otras configuraciones del servidor
+
+    Header always set X-Content-Type-Options "nosniff"
+</VirtualHost>
 
 
 
