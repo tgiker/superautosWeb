@@ -98,3 +98,27 @@ Data: 2019ko ekainaren 12an
 
 Oharra: aldaketak egin ditugu gure web orri sistemara adaptatzeko. Aldaketak izan dira bariableetan.
 
+
+
+
+Cambios punto 5:
+
+en el archivo httpd.conf:
+
+ServerTokens Prod
+ServerSignature Off
+
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+</IfModule>
+
+<VirtualHost *:80>
+    # Otras configuraciones del servidor
+
+    Header always set X-Content-Type-Options "nosniff"
+</VirtualHost>
+
+
+
+
