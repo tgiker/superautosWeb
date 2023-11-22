@@ -10,7 +10,7 @@
 	$nonce = base64_encode(random_bytes(16));
 
 	//CSP konfigurazioa
-	header("Content-Security-Policy: script-src 'self' 'nonce-$nonce'; style-src 'self' 'nonce-$nonce' https://fonts.googleapis.com; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: https://*; connect-src 'self'; frame-src 'self'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self'; object-src 'self'; manifest-src 'self';");
+	header("Content-Security-Policy: script-src 'self' 'nonce-$nonce'; style-src 'self' 'nonce-$nonce' https://fonts.googleapis.com; frame-ancestors 'self'; form-action 'self'; img-src 'self'; connect-src 'self'; frame-src 'self'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self'; object-src 'self'; manifest-src 'self';");
 
 	//Konprobatzen dugu erabiltzailea saioa hasi duela
 	if (!isset($_SESSION['erabiltzaile']))
@@ -26,7 +26,7 @@
 	}
 	else
 	{
-		//erabiltzailea sartuta badago bere erabiltzaile izena hartuko dugu eta ondoren bere informazioa gordeko dugu bariable ezberdinetan
+		//erabiltzailea sartuta badago bere erabiltzaile izena hartuko dugu eta ondoren bere informazioa gordeko dugu aldagai ezberdinetan
 
 		$username = $_SESSION['erabiltzaile'];
 
@@ -47,6 +47,16 @@
 		}
 
 		$resultErabiltzaile_stmt->close();
+
+		//zenbat aldiz saiatu den erabiltzailearen informazioa aldatzen kontagailua hartuko dugu eta ondoren bere informazioa gordeko dugu aldagai ezberdinetan
+
+		if (!isset($_SESSION['kontagailua'])){
+			$_SESSION['kontagailua'] = 0;
+		}
+
+		$pasahitzaKontagailua = $_SESSION['kontagailua'];
+		echo "<div id='kont' kontagailua='$pasahitzaKontagailua'></div>";
+
     	$konexioa->close();
 	}
 	
@@ -115,6 +125,7 @@
 						EMAIL: <input type="text" id="emaila" placeholder="Emaila jarri" name="emaila" value="<?php echo $resultEmail ?? '';?>"> (Formatua:adibidea@zerbitzaria.extentsioa) <br> <br>
 
 						ERABILTZAILE IZENA: <?php echo $username ?? ''; ?> <br>
+						AURREKO PASAHITZA: <input type="password" id="pasahitzaAurrekoa" placeholder="Aurreko pasahitza jarri" name="pasahitzaAurrekoa"> (min: 8 karaktere, max: 16 karaktere) <br>
 						PASAHITZA BERRIA: <input type="password" id="pasahitza" placeholder="Pasahitza berria jarri" name="pasahitza"> (min: 8 karaktere, max: 16 karaktere) <br>
 						
 						<button id="buttonEginda" type="button"> EGINDA </button>
@@ -135,6 +146,40 @@
 </html>
 
 <script nonce="<?php echo $nonce; ?>"> 
+
+	var kontsolaKontagailu = 0;
+
+	const artxiboizena = 'log.json'; 
+	const tokia = 'areaPertsonala.php'
+	function alertToLog(message) {
+	return {
+		timestamp: new Date().toLocaleString(),
+		message: message,
+		tokia: tokia
+		};
+
+	}
+
+	function logToFile(logObject, artxiboizena) {
+	//Recupera los registros existentes del almacenamiento local 
+	const existingLogs = JSON.parse(localStorage.getItem(artxiboizena)) || [];
+
+	//Erregistro berria gehitu
+	existingLogs.push(logObject);
+
+	//Erregistro eguneratuak gordetzen ditu tokiko biltegiratzean, bi espazioekin 
+	localStorage.setItem(artxiboizena, JSON.stringify(existingLogs, null, 2));
+
+	//Erregistroak kontsolan erakusten ditu 
+	console.log(logObject);
+
+	}
+
+	if (document.getElementById('kont').getAttribute('kontagailua') >= 5) {
+		const alertMessage = "Hainbatetan sartzen saiatu dira. KONTUZ, AKTIBITATE SUSMAGARRIA!!";
+		logToFile(alertToLog(alertMessage), artxiboizena);
+		kontsolaKontagailu++;
+	}
 
 	function validate() {
 	
@@ -158,13 +203,24 @@
 
 		var pasahitza = document.getElementById("pasahitza").value;
 		var pasahitzaFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,15}$/;
+
+		if(kontsolaKontagailu >= 10){
+			console.clear();
+			kontsolaKontagailu = 0;
+		}
 		
 		if(izena.length == 0){
-			alert("Ez duzu ezer jarri izen-abizenak zatian!");
+			const alertMessage = "Ez duzu ezer jarri izen-abizenak zatian!";
+			alert(alertMessage);
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
 			return false;
 		}
 		else if(!izenaFormat.test(izena)){
-			alert("Ezin dira zenbakiak erabili izen-abizenak jartzeko!");
+			const alertMessage = "Ezin dira zenbakiak erabili izen-abizenak jartzeko!";
+			alert(alertMessage);
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu = kontsolaKontagailu + 1;
 			return false;
 		}
 		
@@ -178,31 +234,49 @@
 			letra = "TRWAGMYFPDXBNJZSQVHLCKET";
 			letra = letra.substring(zenb, zenb+1);
 			if (letra != letr) {
-				alert("NAN zenbakia txarto dago!");
+				const alertMessage = "NAN zenbakia txarto dago!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
 				return false;
 			}
 			
 		}else{
-			alert("NAN ez du balio!");
+			const alertMessage = "NAN ez du balio!";
+			alert(alertMessage);
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
 			return false;
 		}
 		
 		if (telefonoa.length != 9){
-			alert("Telefono zenbakiak bakarrik 9 zenbaki dituzte!");
+			const alertMessage = "Telefono zenbakiak bakarrik 9 zenbaki dituzte!";
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
+			alert(alertMessage);
 			return false;
 		}
 		if (izenaFormat.test(telefonoa)){
-			alert("Bakarrik zenbakiak erabili ahal dira!");
+			const alertMessage = "Bakarrik zenbakiak erabili ahal dira!";
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
+			alert(alertMessage);
 			return false;
 		}
 		if (telefonoa < 0){
-			alert("Bakarrik zenbaki positiboak erabili ahal dira!");
+			const alertMessage = "Bakarrik zenbaki positiboak erabili ahal dira!";
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
+			alert(alertMessage);
 			return false;
 		}
 		
 		var matchArray = date.match(datePattern);
 		if (matchArray == null) {
-			alert("Ez da dataren formatua!");
+			const alertMessage = "Ez da dataren formatua!";
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
+			alert(alertMessage);
 			return false;
 		}
 
@@ -219,25 +293,35 @@
 		}
 
 		if (month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
-			alert("Ez da dataren formatua!");
+			const alertMessage = "Ez da dataren formatua!";
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
+			alert(alertMessage);
 			return false;
 		}
 		
 		if (!mailFormat.test(mail)) {
-			alert("Emaila ez du balio!");
+			const alertMessage = "Emaila ez du balio!";
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
+			alert(alertMessage);
 			return false;
 		}
 
 		if (!pasahitzaFormat.test(pasahitza)) {
-			alert("Pasahitza gutxienez letra larri bat," +
+			const alertMessage = "Pasahitza gutxienez letra larri bat," +
 			"letra xehe bat, zenbaki bat, sinbolo bat, " + 
-			"8 karaktere eta gehienez 16 karaktere izan behar ditu!");
+			"8 karaktere eta gehienez 16 karaktere izan behar ditu!";
+			logToFile(alertToLog(alertMessage), artxiboizena);
+			kontsolaKontagailu++;
+			alert(alertMessage);
 			return false;
 		}
 
 		//Konprobaketak egin ondoren eta dena ondo badago, formularioa bidaliko dugu erabiltzailearen datuak aldatzeko
 		
 		let nireForm = document.getElementById("formularioa");
+
 		nireForm.submit();
 
 		return true;
