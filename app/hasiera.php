@@ -212,7 +212,7 @@
 					//Erabiltzailea ez bada sisteman sartu ez saio ezer agertuko. 
 					if (isset($_SESSION['erabiltzaile'])){
 						if ($_SESSION['erabiltzaile'] != "admin"){
-							echo "<td nonce='$nonce' class='td-custom'><button nonce='$nonce' type='button' id=\"" . $row["irudia"] . "\">EROSI</button></td>";
+							echo "<td nonce='$nonce' class='td-custom'> <center> <button nonce='$nonce' type='button' id=\"" . $row["irudia"] . "\">EROSI</button> </center> </td>";
 							echo "<script nonce='$nonce'>
 							document.addEventListener('DOMContentLoaded', function () {
 								var buttonErosi = document.getElementById(\"" . $row["irudia"] . "\");
@@ -227,7 +227,7 @@
 							";
 						}
 						else{
-							echo "<td nonce='$nonce' class='td-custom'><button nonce='$nonce' type='submit'>MODIFIKATU</button></td>";
+							echo "<td nonce='$nonce' class='td-custom'> <center> <button nonce='$nonce' type='submit'>MODIFIKATU</button> </center> </td>";
 						}
 					}
 				?>
