@@ -5,6 +5,12 @@
 	//X-Frame-Options konfigurazioa
 	header('X-Frame-Options: DENY');
 
+    //X-Powered-By goiburua kendu informazioa ez zabaltzeko
+	header_remove("X-Powered-By");
+
+    //X-Content-Type-Options 'nosniff' ezarri
+    header("X-Content-Type-Options: nosniff");
+
     //nonce sortu
     $nonce = base64_encode(random_bytes(16));
 
