@@ -1,5 +1,10 @@
 <?php
 
+    ini_set('display_errors', 0);
+
+	//HttpOnly ezarri erasoak saihesteko
+	session_set_cookie_params(0, '/', '', false, true);
+	
     //X-Frame-Options konfigurazioa
 	header('X-Frame-Options: DENY');
 

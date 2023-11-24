@@ -1,5 +1,10 @@
 <?php
+    
+	ini_set('display_errors', 0);
 
+	//HttpOnly ezarri erasoak saihesteko
+	session_set_cookie_params(0, '/', '', false, true);
+	
     session_start();
 
     include 'konexioa_be.php';
@@ -94,6 +99,8 @@
 
                 unset($_SESSION['csrf_token']);
 
+                $_SESSION['aurrekoAutoaErregistratu'] = 1;
+
                 exit();
 
             } else {
@@ -104,6 +111,7 @@
         }
 
     } catch (Exception $e) {
+        echo "Error. Mesedez saiatu berriro geroago";
         //500 errorea adierazi
         header("HTTP/1.1 500 Internal Server Error");
         include("error500.html");

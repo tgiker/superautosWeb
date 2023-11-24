@@ -1,5 +1,10 @@
 <?php
 
+	ini_set('display_errors', 0);
+
+	//HttpOnly ezarri erasoak saihesteko
+	session_set_cookie_params(0, '/', '', false, true);
+	
 	//nonce sortu
 	$nonce = base64_encode(random_bytes(16));
 
@@ -41,7 +46,8 @@
 		}
 
 	} catch (Exception $e) {
-		//500 errorea adierazi
+		echo "Error. Mesedez saiatu berriro geroago";
+        //500 errorea adierazi
 		header("HTTP/1.1 500 Internal Server Error");
 		include("error500.html");
 		exit;
@@ -139,98 +145,156 @@
 
 <script nonce="<?php echo $nonce; ?>">
 		 
-	function baieztatu() {
+	try{
 
-		//Hemen baieztatuko dugu administratzailea ziur badago autoa ezabatu nahi duela
-		if (window.confirm("Ziur zaude auto hau ezabatu nahi duzula?")) {
-			let nireForm = document.getElementById("autoEzabaketaForm");
-			nireForm.submit();
-		} else {
-			alert("Ez da autoa ezabatuko");
-		}
-	}
+		var kontsolaKontagailu = 0;
 
-	function validate() {		
+		const artxiboizena = 'log.json'; 
+		const tokia = 'autoaModifikatu.php'
 
-		//Funtzio honetan konprobatuko dugu formatu guztiak betetzen direla. Horretarako informazioa gordeko ditugu lehenengo eta ondoren konprobaketak egingo ditugu
-
-        var irudia = document.getElementById("irudia").value;
-        var marka = document.getElementById("marka").value;
-		var izena = document.getElementById("izena").value;
-        var potentzia = document.getElementById("potentzia").value;
-		var prezioa = document.getElementById("prezioa").value;
-
-        var zenbakiFormat = /[^0-9]/g;
-		
-        if(irudia.length == 0){
-			alert("Ez duzu ezer jarri irudia zatian!");
-			return false;
+		function alertToLog(message) {
+			//Erregistroak kontsolan erakusten ditu 
+			console.log(" | Time: " + new Date().toLocaleString() + "\n | Mezua: " + message + "\n | Tokia: " + tokia);
+			return {
+				timestamp: new Date().toLocaleString(),
+				message: message,
+				tokia: tokia
+			};
 		}
 
-        if(marka.length == 0){
-			alert("Ez duzu ezer jarri marka zatian!");
-			return false;
+		function logToFile(logObject, artxiboizena) {
+			//Recupera los registros existentes del almacenamiento local 
+			const existingLogs = JSON.parse(localStorage.getItem(artxiboizena)) || [];
+
+			//Erregistro berria gehitu
+			existingLogs.push(logObject);
+
+			//Erregistro eguneratuak gordetzen ditu tokiko biltegiratzean, bi espazioekin 
+			localStorage.setItem(artxiboizena, JSON.stringify(existingLogs, null, 2));
 		}
 
-        if(izena.length == 0){
-			alert("Ez duzu ezer jarri izena zatian!");
-			return false;
+		function baieztatu() {
+
+			//Hemen baieztatuko dugu administratzailea ziur badago autoa ezabatu nahi duela
+			if (window.confirm("Ziur zaude auto hau ezabatu nahi duzula?")) {
+				let nireForm = document.getElementById("autoEzabaketaForm");
+				nireForm.submit();
+			} else {
+				alert("Ez da autoa ezabatuko");
+			}
 		}
 
-        if(potentzia.length == 0){
-			alert("Ez duzu ezer jarri potentzia zatian!");
-			return false;
-		}
-        else if(zenbakiFormat.test(potentzia)){
-			alert("Ezin dira hizkiak erabili potentzia jartzeko!");
-			return false;
-		}
+		function validate() {		
 
-		if(prezioa.length == 0){
-			alert("Ez duzu ezer jarri prezioa zatian!");
-			return false;
-		}
-        else if(zenbakiFormat.test(prezioa)){
-			alert("Ezin dira hizkiak erabili prezioa jartzeko!");
-			return false;
-		}
+			//Funtzio honetan konprobatuko dugu formatu guztiak betetzen direla. Horretarako informazioa gordeko ditugu lehenengo eta ondoren konprobaketak egingo ditugu
 
-		//Konprobaketak egin ondoren eta dena ondo badago, formularioa bidaliko dugu autoaren datuak aldatzeko
-		
-		let nireForm = document.getElementById("formularioa");
-		nireForm.submit();
+			var irudia = document.getElementById("irudia").value;
+			var marka = document.getElementById("marka").value;
+			var izena = document.getElementById("izena").value;
+			var potentzia = document.getElementById("potentzia").value;
+			var prezioa = document.getElementById("prezioa").value;
 
-		return true;
-	}
+			var zenbakiFormat = /[^0-9]/g;
 
-	document.addEventListener('DOMContentLoaded', function () {
-		var buttonEginda = document.getElementById('buttonEginda');
-
-		if (buttonEginda) {
-			buttonEginda.addEventListener('click', function () {
-				validate();
-			});
-		}
-	});
-
-	document.addEventListener('DOMContentLoaded', function () {
-		var buttonEzabatu = document.getElementById('buttonEzabatu');
-
-		if (buttonEzabatu) {
-			buttonEzabatu.addEventListener('click', function () {
-				baieztatu();
-			});
-		}
-	});
+			if(kontsolaKontagailu >= 10){
+				console.clear();
+				kontsolaKontagailu = 0;
+			}
 			
-	document.addEventListener('DOMContentLoaded', function () {
-		var buttonHasiera = document.getElementById('buttonHasiera');
+			if(irudia.length == 0){
+				const alertMessage = "Ez duzu ezer jarri irudia zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
 
-		if (buttonHasiera) {
-			buttonHasiera.addEventListener('click', function () {
-				window.location.href = 'hasiera.php';
-			});
+			if(marka.length == 0){
+				const alertMessage = "Ez duzu ezer jarri marka zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+
+			if(izena.length == 0){
+				const alertMessage = "Ez duzu ezer jarri izena zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+
+			if(potentzia.length == 0){
+				const alertMessage = "Ez duzu ezer jarri potentzia zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+			else if(zenbakiFormat.test(potentzia)){
+				const alertMessage = "Ezin dira hizkiak erabili potentzia jartzeko!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+
+			if(prezioa.length == 0){
+				const alertMessage = "Ez duzu ezer jarri prezioa zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+			else if(zenbakiFormat.test(prezioa)){
+				const alertMessage = "Ezin dira hizkiak erabili prezioa jartzeko!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+
+			//Konprobaketak egin ondoren eta dena ondo badago, formularioa bidaliko dugu autoaren datuak aldatzeko
+			
+			let nireForm = document.getElementById("formularioa");
+			nireForm.submit();
+
+			return true;
 		}
-	});
+
+		document.addEventListener('DOMContentLoaded', function () {
+			var buttonEginda = document.getElementById('buttonEginda');
+
+			if (buttonEginda) {
+				buttonEginda.addEventListener('click', function () {
+					validate();
+				});
+			}
+		});
+
+		document.addEventListener('DOMContentLoaded', function () {
+			var buttonEzabatu = document.getElementById('buttonEzabatu');
+
+			if (buttonEzabatu) {
+				buttonEzabatu.addEventListener('click', function () {
+					baieztatu();
+				});
+			}
+		});
+				
+		document.addEventListener('DOMContentLoaded', function () {
+			var buttonHasiera = document.getElementById('buttonHasiera');
+
+			if (buttonHasiera) {
+				buttonHasiera.addEventListener('click', function () {
+					window.location.href = 'hasiera.php';
+				});
+			}
+		});
+
+	} catch {
+		System.err.println("Error. Saiatu berriro geroago mesedez.");
+	}
 
 </script>

@@ -1,32 +1,15 @@
 <?php
 
-	//Konprobatzen dugu administratzailea bagara
+	ini_set('display_errors', 0);
 
-	session_start();
-
+	//HttpOnly ezarri erasoak saihesteko
+	session_set_cookie_params(0, '/', '', false, true);
+	
 	//nonce sortu
 	$nonce = base64_encode(random_bytes(16));
 
 	//CSP konfigurazioa
 	header("Content-Security-Policy: script-src 'self' 'nonce-$nonce'; style-src 'self' 'nonce-$nonce' https://fonts.googleapis.com; frame-ancestors 'self'; form-action 'self'; img-src 'self'; connect-src 'self'; frame-src 'self'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self'; object-src 'self'; manifest-src 'self';");
-
-	if (!isset($_SESSION['erabiltzaile']) || $_SESSION['erabiltzaile'] != 'admin')
-	{
-		echo"
-			<script nonce='$nonce'>
-				alert('Ez dituzu pribilegiorik hemen egoteko');
-				window.location = 'hasiera.php';
-			</script>
-		";
-		session_destroy();
-		die();
-	}
-
-	//anti-CSRF token sortu
-	$csrfToken = bin2hex(random_bytes(32));
-
-	//anti-CSRF token gorde sesioan
-	$_SESSION['csrf_token'] = $csrfToken;
 
 	//X-Frame-Options konfigurazioa
 	header('X-Frame-Options: DENY');
@@ -34,8 +17,39 @@
 	//X-Powered-By goiburua kendu informazioa ez zabaltzeko
 	header_remove("X-Powered-By");
 
-    //X-Content-Type-Options 'nosniff' ezarri
-    header("X-Content-Type-Options: nosniff");
+	//X-Content-Type-Options 'nosniff' ezarri
+	header("X-Content-Type-Options: nosniff");
+	
+	try{
+		//Konprobatzen dugu administratzailea bagara
+
+		session_start();
+
+		if (!isset($_SESSION['erabiltzaile']) || $_SESSION['erabiltzaile'] != 'admin')
+		{
+			echo"
+				<script nonce='$nonce'>
+					alert('Ez dituzu pribilegiorik hemen egoteko');
+					window.location = 'hasiera.php';
+				</script>
+			";
+			session_destroy();
+			die();
+		}
+
+		//anti-CSRF token sortu
+		$csrfToken = bin2hex(random_bytes(32));
+
+		//anti-CSRF token gorde sesioan
+		$_SESSION['csrf_token'] = $csrfToken;
+
+	} catch (Exception $e) {
+		echo "Error. Mesedez saiatu berriro geroago";
+        //500 errorea adierazi
+		header("HTTP/1.1 500 Internal Server Error");
+		include("error500.html");
+		exit;
+	}
 
 ?>
 
@@ -99,78 +113,136 @@
 </html>
 
 <script nonce="<?php echo $nonce; ?>">
+
+	try{
+
+		var kontsolaKontagailu = 0;
+
+		const artxiboizena = 'log.json'; 
+		const tokia = 'autoaSartu.php'
+
+		function alertToLog(message) {
+			//Erregistroak kontsolan erakusten ditu 
+			console.log(" | Time: " + new Date().toLocaleString() + "\n | Mezua: " + message + "\n | Tokia: " + tokia);
+			return {
+				timestamp: new Date().toLocaleString(),
+				message: message,
+				tokia: tokia
+			};
+		}
+
+		function logToFile(logObject, artxiboizena) {
+			//Recupera los registros existentes del almacenamiento local 
+			const existingLogs = JSON.parse(localStorage.getItem(artxiboizena)) || [];
+
+			//Erregistro berria gehitu
+			existingLogs.push(logObject);
+
+			//Erregistro eguneratuak gordetzen ditu tokiko biltegiratzean, bi espazioekin 
+			localStorage.setItem(artxiboizena, JSON.stringify(existingLogs, null, 2));
+		}
 		 
-	function validate() {		
+		function validate() {		
 
-		//Funtzio honetan konprobatuko dugu formatu guztiak betetzen direla. Horretarako informazioa gordeko ditugu lehenengo eta ondoren konprobaketak egingo ditugu
+			//Funtzio honetan konprobatuko dugu formatu guztiak betetzen direla. Horretarako informazioa gordeko ditugu lehenengo eta ondoren konprobaketak egingo ditugu
 
-        var irudia = document.getElementById("irudia").value;
-        var marka = document.getElementById("marka").value;
-		var izena = document.getElementById("izena").value;
-        var potentzia = document.getElementById("potentzia").value;
-		var prezioa = document.getElementById("prezioa").value;
+			var irudia = document.getElementById("irudia").value;
+			var marka = document.getElementById("marka").value;
+			var izena = document.getElementById("izena").value;
+			var potentzia = document.getElementById("potentzia").value;
+			var prezioa = document.getElementById("prezioa").value;
 
-        var zenbakiFormat = /[^0-9]/g;
-		
-        if(irudia.length == 0){
-			alert("Ez duzu ezer jarri irudia zatian!");
-			return false;
-		}
-
-        if(marka.length == 0){
-			alert("Ez duzu ezer jarri marka zatian!");
-			return false;
-		}
-
-        if(izena.length == 0){
-			alert("Ez duzu ezer jarri izena zatian!");
-			return false;
-		}
-
-        if(potentzia.length == 0){
-			alert("Ez duzu ezer jarri potentzia zatian!");
-			return false;
-		}
-        else if(zenbakiFormat.test(potentzia)){
-			alert("Ezin dira hizkiak erabili potentzia jartzeko!");
-			return false;
-		}
-
-		if(prezioa.length == 0){
-			alert("Ez duzu ezer jarri prezioa zatian!");
-			return false;
-		}
-        else if(zenbakiFormat.test(prezioa)){
-			alert("Ezin dira hizkiak erabili prezioa jartzeko!");
-			return false;
-		}
-		
-		//Konprobaketak egin ondoren eta dena ondo badago, formularioa bidaliko dugu autoa erregistratzeko
-
-		let nireForm = document.getElementById("formularioa");
-		nireForm.submit();
-
-		return true;
-	}
-
-	document.addEventListener('DOMContentLoaded', function () {
-		var buttonEginda = document.getElementById('buttonEginda');
-
-		if (buttonEginda) {
-			buttonEginda.addEventListener('click', function () {
-				validate();
-			});
-		}
-	});
+			var zenbakiFormat = /[^0-9]/g;
 			
-	document.addEventListener('DOMContentLoaded', function () {
-		var buttonHasiera = document.getElementById('buttonHasiera');
+			if(kontsolaKontagailu >= 10){
+				console.clear();
+				kontsolaKontagailu = 0;
+			}
+			
+			if(irudia.length == 0){
+				const alertMessage = "Ez duzu ezer jarri irudia zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
 
-		if (buttonHasiera) {
-			buttonHasiera.addEventListener('click', function () {
-				window.location.href = 'hasiera.php';
-			});
+			if(marka.length == 0){
+				const alertMessage = "Ez duzu ezer jarri marka zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+
+			if(izena.length == 0){
+				const alertMessage = "Ez duzu ezer jarri izena zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+
+			if(potentzia.length == 0){
+				const alertMessage = "Ez duzu ezer jarri potentzia zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+			else if(zenbakiFormat.test(potentzia)){
+				const alertMessage = "Ezin dira hizkiak erabili potentzia jartzeko!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+
+			if(prezioa.length == 0){
+				const alertMessage = "Ez duzu ezer jarri prezioa zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+			else if(zenbakiFormat.test(prezioa)){
+				const alertMessage = "Ezin dira hizkiak erabili prezioa jartzeko!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+			
+			//Konprobaketak egin ondoren eta dena ondo badago, formularioa bidaliko dugu autoa erregistratzeko
+
+			let nireForm = document.getElementById("formularioa");
+			nireForm.submit();
+
+			return true;
 		}
-	});
+
+		document.addEventListener('DOMContentLoaded', function () {
+			var buttonEginda = document.getElementById('buttonEginda');
+
+			if (buttonEginda) {
+				buttonEginda.addEventListener('click', function () {
+					validate();
+				});
+			}
+		});
+				
+		document.addEventListener('DOMContentLoaded', function () {
+			var buttonHasiera = document.getElementById('buttonHasiera');
+
+			if (buttonHasiera) {
+				buttonHasiera.addEventListener('click', function () {
+					window.location.href = 'hasiera.php';
+				});
+			}
+		});
+
+	} catch {
+		System.err.println("Error. Saiatu berriro geroago mesedez.");
+	}
 
 </script>

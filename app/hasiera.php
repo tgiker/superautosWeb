@@ -1,15 +1,57 @@
 <?php
 
+	ini_set('display_errors', 0);
+
+	// Configurar SameSite=Strict
+    session_get_cookie_params()['samesite'] = 'Strict';
+
+	//HttpOnly ezarri erasoak saihesteko
+	session_set_cookie_params(0, '/', '', false, true);
+
 	include 'php/konexioa_be.php';
 
-	//Sesioa hasiko dugu
-	session_start();
+	try{
 
-	//Auto guztien informazioa gordeko ditugu
+		//Saioa hasiko dugu
+		session_start();
 
-	$autoa = mysqli_query($konexioa, "SELECT * FROM autoak");
+		//Auto guztien informazioa gordeko ditugu
 
-	$rows = mysqli_fetch_all($autoa, MYSQLI_ASSOC);
+		$autoa = mysqli_query($konexioa, "SELECT * FROM autoak");
+
+		$rows = mysqli_fetch_all($autoa, MYSQLI_ASSOC);
+
+		if (!isset($_SESSION['aurrekoLogeatuKont'])){
+			$_SESSION['aurrekoLogeatuKont'] = 0;
+		}
+
+		if (!isset($_SESSION['aurrekoErregistro'])){
+			$_SESSION['aurrekoErregistro'] = 0;
+		}
+
+		if (!isset($_SESSION['aurrekoErabModifikatu'])){
+			$_SESSION['aurrekoErabModifikatu'] = 0;
+		}
+
+		if (!isset($_SESSION['aurrekoAutoaErregistratu'])){
+			$_SESSION['aurrekoAutoaErregistratu'] = 0;
+		}
+
+		if (!isset($_SESSION['aurrekoAutoaModifikatu'])){
+			$_SESSION['aurrekoAutoaModifikatu'] = 0;
+		}
+
+		if (!isset($_SESSION['aurrekoAutoaEzabatu'])){
+			$_SESSION['aurrekoAutoaEzabatu'] = 0;
+		}
+
+	} catch (Exception $e) {
+		echo "Error. Mesedez saiatu berriro geroago";
+        //500 errorea adierazi
+		header("HTTP/1.1 500 Internal Server Error");
+		include("error500.html");
+		exit;
+	}
 
 	//nonce sortu
 	$nonce = base64_encode(random_bytes(16));
@@ -58,9 +100,116 @@
 
 		</style>
 
+		<?php
+
+			$aurrekoLogeatuKont = $_SESSION['aurrekoLogeatuKont'];
+			echo "<div id='kontLog' kontagailua='$aurrekoLogeatuKont'></div>";
+
+			$aurrekoErregistroKont = $_SESSION['aurrekoErregistro'];
+			echo "<div id='kont' kontagailua='$aurrekoErregistroKont'></div>";
+
+			$aurrekoErabModifikatu = $_SESSION['aurrekoErabModifikatu'];
+			echo "<div id='kontErabMod' kontagailua='$aurrekoErabModifikatu'></div>";
+
+			$aurrekoAutoaErregistratu = $_SESSION['aurrekoAutoaErregistratu'];
+			echo "<div id='kontAutoSartu' kontagailua='$aurrekoAutoaErregistratu'></div>";
+
+			$aurrekoAutoaModifikatu = $_SESSION['aurrekoAutoaModifikatu'];
+			echo "<div id='kontAutoMod' kontagailua='$aurrekoAutoaModifikatu'></div>";
+
+			$aurrekoAutoaEzabatu = $_SESSION['aurrekoAutoaEzabatu'];
+			echo "<div id='kontAutoEzab' kontagailua='$aurrekoAutoaEzabatu'></div>";
+			
+		?>
+
 		<script nonce="<?php echo $nonce; ?>" type="text/javascript"> 
 
+		try {
+
+			var kontsolaKontagailu = 0;
+
+			const artxiboizena = 'log.json'; 
+			const tokia = 'areaPertsonala.php'
+			function alertToLog(message) {
+				//Erregistroak kontsolan erakusten ditu 
+				console.log(" | Time: " + new Date().toLocaleString() + "\n | Mezua: " + message + "\n | Tokia: " + tokia);
+				return {
+					timestamp: new Date().toLocaleString(),
+					message: message,
+					tokia: tokia
+				};
+			}
+
+			function logToFile(logObject, artxiboizena) {
+				//Recupera los registros existentes del almacenamiento local 
+				const existingLogs = JSON.parse(localStorage.getItem(artxiboizena)) || [];
+
+				//Erregistro berria gehitu
+				existingLogs.push(logObject);
+
+				//Erregistro eguneratuak gordetzen ditu tokiko biltegiratzean, bi espazioekin 
+				localStorage.setItem(artxiboizena, JSON.stringify(existingLogs, null, 2));
+			}
+
+			if (document.getElementById('kontLog').getAttribute('kontagailua') >= 1) {
+				const alertMessage = "Erabiltzaile izena eta pasahitza ez datoz bat";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				<?php
+					$_SESSION['aurrekoLogeatuKont'] = 0;
+				?>
+			}
+
+			if (document.getElementById('kont').getAttribute('kontagailua') >= 1) {
+				const alertMessage = "Erabiltzailea erregistratu da.";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				<?php
+					$_SESSION['aurrekoErregistro'] = 0;
+				?>
+			}
+
+			if (document.getElementById('kontErabMod').getAttribute('kontagailua') >= 1) {
+				const alertMessage = "Erabiltzailea modifikatu da.";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				<?php
+					$_SESSION['aurrekoErabModifikatu'] = 0;
+				?>
+			}
+
+			if (document.getElementById('kontAutoSartu').getAttribute('kontagailua') >= 1) {
+				const alertMessage = "Autoa erregistratu da.";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				<?php
+					$_SESSION['aurrekoAutoaErregistratu'] = 0;
+				?>
+			}
+
+			if (document.getElementById('kontAutoMod').getAttribute('kontagailua') >= 1) {
+				const alertMessage = "Autoa modifikatu da.";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				<?php
+					$_SESSION['aurrekoAutoaModifikatu'] = 0;
+				?>
+			}
+
+			if (document.getElementById('kontAutoEzab').getAttribute('kontagailua') >= 1) {
+				const alertMessage = "Autoa ezabatu da.";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				<?php
+					$_SESSION['aurrekoAutoaEzabatu'] = 0;
+				?>
+			}
+
 			function logeatu() {
+
+				const alertMessage = "Logeatu zara";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
 
 				//Funtzio honekin adieraziko diogu erabiltzaileari sartuta dagoela web sisteman
 			
@@ -83,6 +232,10 @@
 			}
 
 			function deslogeatu() {
+
+				const alertMessage = "Ez zaude logeatuta";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
 
 				//Funtzio honekin adieraziko diogu erabiltzaileari ez dagoela sartuta web sisteman
 				let logeatugabe = document.getElementById("logeatugabe");
@@ -113,6 +266,10 @@
 					});
 				}
 			});
+
+		} catch {
+            System.err.println("Error. Saiatu berriro geroago mesedez.");
+        }
 			
 		</script>
 		
@@ -188,15 +345,23 @@
 				<th nonce="<?php echo $nonce; ?>" > <center> <font color=white size=8> Izena </font> </center> </th>
 				<th nonce="<?php echo $nonce; ?>" > <center> <font color=white size=8> Prezioa (€) </font> </center> </th>
 				<?php
-					//Konprobatuko dugu erabiltzailea saioa ireki duen edo ez. Erabiltzailea administratzailea bada auto berriak erregistratuko ahalko ditu eta erabiltzailea admin ez bada Erosi textua agertuko zaio.
-					//Erabiltzailea ez bada sisteman sartu ez saio ezer agertuko. 
-					if (isset($_SESSION['erabiltzaile'])){
-						if ($_SESSION['erabiltzaile'] != "admin"){
-							echo "<th nonce='$nonce' class='td-custom'> <center> <font color=white size=8> Erosi </font> </center> </th>";
+					try{
+						//Konprobatuko dugu erabiltzailea saioa ireki duen edo ez. Erabiltzailea administratzailea bada auto berriak erregistratuko ahalko ditu eta erabiltzailea admin ez bada Erosi textua agertuko zaio.
+						//Erabiltzailea ez bada sisteman sartu ez saio ezer agertuko. 
+						if (isset($_SESSION['erabiltzaile'])){
+							if ($_SESSION['erabiltzaile'] != "admin"){
+								echo "<th nonce='$nonce' class='td-custom'> <center> <font color=white size=8> Erosi </font> </center> </th>";
+							}
+							else{
+								echo "<th nonce='$nonce' class='td-custom'><button nonce='$nonce' type='button' id='buttonAutoaErregistratu'>AUTOA ERREGISTRATU</button></th>";
+							}
 						}
-						else{
-							echo "<th nonce='$nonce' class='td-custom'><button nonce='$nonce' type='button' id='buttonAutoaErregistratu'>AUTOA ERREGISTRATU</button></th>";
-						}
+					} catch (Exception $e) {
+						echo "Error. Mesedez saiatu berriro geroago";
+        				//500 errorea adierazi
+						header("HTTP/1.1 500 Internal Server Error");
+						include("error500.html");
+						exit;
 					}
 				?>
 				
@@ -216,25 +381,34 @@
 				<?php
 					//Konprobatuko dugu erabiltzailea saioa ireki duen edo ez. Erabiltzailea administratzailea bada auto modifikatu ahalko ditu eta erabiltzailea admin ez bada Erosi botoia agertuko zaio.
 					//Erabiltzailea ez bada sisteman sartu ez saio ezer agertuko. 
-					if (isset($_SESSION['erabiltzaile'])){
-						if ($_SESSION['erabiltzaile'] != "admin"){
-							echo "<td nonce='$nonce' class='td-custom'> <center> <button nonce='$nonce' type='button' id=\"" . $row["irudia"] . "\">EROSI</button> </center> </td>";
-							echo "<script nonce='$nonce'>
-							document.addEventListener('DOMContentLoaded', function () {
-								var buttonErosi = document.getElementById(\"" . $row["irudia"] . "\");
-				
-								if (buttonErosi) {
-									buttonErosi.addEventListener('click', function () {
-										window.location.href = \"" . $row["irudia"] . "\";
-									});
-								}
-							});
-							</script>
-							";
+
+					try{
+						if (isset($_SESSION['erabiltzaile'])){
+							if ($_SESSION['erabiltzaile'] != "admin"){
+								echo "<td nonce='$nonce' class='td-custom'> <center> <button nonce='$nonce' type='button' id=\"" . $row["irudia"] . "\">EROSI</button> </center> </td>";
+								echo "<script nonce='$nonce'>
+								document.addEventListener('DOMContentLoaded', function () {
+									var buttonErosi = document.getElementById(\"" . $row["irudia"] . "\");
+					
+									if (buttonErosi) {
+										buttonErosi.addEventListener('click', function () {
+											window.location.href = \"" . $row["irudia"] . "\";
+										});
+									}
+								});
+								</script>
+								";
+							}
+							else{
+								echo "<td nonce='$nonce' class='td-custom'> <center> <button nonce='$nonce' type='submit'>MODIFIKATU</button> </center> </td>";
+							}
 						}
-						else{
-							echo "<td nonce='$nonce' class='td-custom'> <center> <button nonce='$nonce' type='submit'>MODIFIKATU</button> </center> </td>";
-						}
+					} catch (Exception $e) {
+						echo "Error. Mesedez saiatu berriro geroago";
+        				//500 errorea adierazi
+						header("HTTP/1.1 500 Internal Server Error");
+						include("error500.html");
+						exit;
 					}
 				?>
 			</form>
@@ -244,22 +418,30 @@
 		</table>
 
 		<?php
-			// Konprobatuko dugu erabiltzailea web sisteman sartuta dagoen edo ez.
-			if (!isset($_SESSION['erabiltzaile'])){
-				echo "		
-					<script nonce='$nonce' >
-						deslogeatu();
-					</script>
-					";
-			}
-			else{
-				$username = $_SESSION['erabiltzaile'];
-				echo "<div nonce='$nonce'  id='erabil' data-izena='$username'></div>";
-				echo "		
-					<script nonce='$nonce' >
-						logeatu();
-					</script>
-					";
+			try{
+				// Konprobatuko dugu erabiltzailea web sisteman sartuta dagoen edo ez.
+				if (!isset($_SESSION['erabiltzaile'])){
+					echo "		
+						<script nonce='$nonce' >
+							deslogeatu();
+						</script>
+						";
+				}
+				else{
+					$username = $_SESSION['erabiltzaile'];
+					echo "<div nonce='$nonce'  id='erabil' data-izena='$username'></div>";
+					echo "		
+						<script nonce='$nonce' >
+							logeatu();
+						</script>
+						";
+				}
+			} catch (Exception $e) {
+				echo "Error. Mesedez saiatu berriro geroago";
+        		//500 errorea adierazi
+				header("HTTP/1.1 500 Internal Server Error");
+				include("error500.html");
+				exit;
 			}			
 		?>
 

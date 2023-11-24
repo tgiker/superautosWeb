@@ -1,5 +1,10 @@
 <?php
 
+	ini_set('display_errors', 0);
+
+	//HttpOnly ezarri erasoak saihesteko
+	session_set_cookie_params(0, '/', '', false, true);
+	
 	//nonce sortu
 	$nonce = base64_encode(random_bytes(16));
 
@@ -56,14 +61,16 @@
 				$_SESSION['kontagailua'] = 0;
 			}
 
-			$pasahitzaKontagailua = $_SESSION['kontagailua'];
-			echo "<div id='kont' kontagailua='$pasahitzaKontagailua'></div>";
+			if (!isset($_SESSION['aurrekoTxarto'])){
+				$_SESSION['aurrekoTxarto'] = 0;
+			}
 
 			$konexioa->close();
 		}
 
 	} catch (Exception $e) {
-		//500 errorea adierazi
+		echo "Error. Mesedez saiatu berriro geroago";
+        //500 errorea adierazi
 		header("HTTP/1.1 500 Internal Server Error");
 		include("error500.html");
 		exit;
@@ -108,6 +115,13 @@
 		none {display: none;}
 
 		</style>
+
+		<?php
+			$pasahitzaKontagailua = $_SESSION['kontagailua'];
+			$aurrekoTxartoKontagailua = $_SESSION['aurrekoTxarto'];
+			echo "<div id='kont' kontagailua='$pasahitzaKontagailua'></div>";
+			echo "<div id='kontAurrekoTxarto' kontagailuaAurreko='$aurrekoTxartoKontagailua'></div>";
+		?>
 
 	</head>
 
@@ -162,204 +176,216 @@
 
 <script nonce="<?php echo $nonce; ?>"> 
 
-	var kontsolaKontagailu = 0;
+	try{
 
-	const artxiboizena = 'log.json'; 
-	const tokia = 'areaPertsonala.php'
-	function alertToLog(message) {
-	return {
-		timestamp: new Date().toLocaleString(),
-		message: message,
-		tokia: tokia
-		};
+		var kontsolaKontagailu = 0;
 
-	}
-
-	function logToFile(logObject, artxiboizena) {
-	//Recupera los registros existentes del almacenamiento local 
-	const existingLogs = JSON.parse(localStorage.getItem(artxiboizena)) || [];
-
-	//Erregistro berria gehitu
-	existingLogs.push(logObject);
-
-	//Erregistro eguneratuak gordetzen ditu tokiko biltegiratzean, bi espazioekin 
-	localStorage.setItem(artxiboizena, JSON.stringify(existingLogs, null, 2));
-
-	//Erregistroak kontsolan erakusten ditu 
-	console.log(logObject);
-
-	}
-
-	if (document.getElementById('kont').getAttribute('kontagailua') >= 5) {
-		const alertMessage = "Hainbatetan sartzen saiatu dira. KONTUZ, AKTIBITATE SUSMAGARRIA!!";
-		logToFile(alertToLog(alertMessage), artxiboizena);
-		kontsolaKontagailu++;
-	}
-
-	function validate() {
-	
-		//Funtzio honetan konprobatuko dugu formatu guztiak betetzen direla. Horretarako formatuak eta informazioa gordeko ditugu lehenengo eta ondoren konprobaketak egingo ditugu
-
-		var izena = document.getElementById("izen_abizenak").value;
-		var izenaFormat = /[^0-9]/g;
-	
-		var zenb, letr, letra;
-		var nanFormat = /^[XYZ]?\d{5,8}-[A-Z]$/;
-		var nan = document.getElementById("nan").value;
-		nan = nan.toUpperCase();
-	
-		var telefonoa = document.getElementById("telefonoa").value;
-		
-		var date = document.getElementById("jaiotze_data").value;
-		var datePattern = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;;
-		
-		var mail = document.getElementById("emaila").value;
-		var mailFormat = /\S+@\S+\.\S+/;
-
-		var pasahitza = document.getElementById("pasahitza").value;
-		var pasahitzaFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,15}$/;
-
-		if(kontsolaKontagailu >= 10){
-			console.clear();
-			kontsolaKontagailu = 0;
+		const artxiboizena = 'log.json'; 
+		const tokia = 'areaPertsonala.php'
+		function alertToLog(message) {
+			//Erregistroak kontsolan erakusten ditu 
+			console.log(" | Time: " + new Date().toLocaleString() + "\n | Mezua: " + message + "\n | Tokia: " + tokia);
+			return {
+				timestamp: new Date().toLocaleString(),
+				message: message,
+				tokia: tokia
+			};
 		}
-		
-		if(izena.length == 0){
-			const alertMessage = "Ez duzu ezer jarri izen-abizenak zatian!";
-			alert(alertMessage);
+
+		function logToFile(logObject, artxiboizena) {
+			//Recupera los registros existentes del almacenamiento local 
+			const existingLogs = JSON.parse(localStorage.getItem(artxiboizena)) || [];
+
+			//Erregistro berria gehitu
+			existingLogs.push(logObject);
+
+			//Erregistro eguneratuak gordetzen ditu tokiko biltegiratzean, bi espazioekin 
+			localStorage.setItem(artxiboizena, JSON.stringify(existingLogs, null, 2));
+		}
+
+		if (document.getElementById('kontAurrekoTxarto').getAttribute('kontagailuaAurreko') >= 1) {
+			const alertMessage = "Ezin da erabiltzailea erregistratu. Aurreko pasahitza txartu jarri duzu.";
 			logToFile(alertToLog(alertMessage), artxiboizena);
 			kontsolaKontagailu++;
-			return false;
+			<?php
+				$_SESSION['aurrekoTxarto'] = 0;
+			?>
 		}
-		else if(!izenaFormat.test(izena)){
-			const alertMessage = "Ezin dira zenbakiak erabili izen-abizenak jartzeko!";
-			alert(alertMessage);
+
+		if (document.getElementById('kont').getAttribute('kontagailua') >= 5) {
+			const alertMessage = "Hainbatetan sartzen saiatu dira. KONTUZ, AKTIBITATE SUSMAGARRIA!!";
 			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu = kontsolaKontagailu + 1;
-			return false;
+			kontsolaKontagailu++;
 		}
+
+		function validate() {
 		
-		if(nanFormat.test(nan)){
-			zenb = nan.substr(0,nan.length-2);
-			zenb = zenb.replace("X", 0);
-			zenb = zenb.replace("Y", 1);
-			zenb = zenb.replace("Z", 2);
-			letr = nan.substr(nan.length-1, 1);
-			zenb = zenb % 23;
-			letra = "TRWAGMYFPDXBNJZSQVHLCKET";
-			letra = letra.substring(zenb, zenb+1);
-			if (letra != letr) {
-				const alertMessage = "NAN zenbakia txarto dago!";
+			//Funtzio honetan konprobatuko dugu formatu guztiak betetzen direla. Horretarako formatuak eta informazioa gordeko ditugu lehenengo eta ondoren konprobaketak egingo ditugu
+
+			var izena = document.getElementById("izen_abizenak").value;
+			var izenaFormat = /[^0-9]/g;
+		
+			var zenb, letr, letra;
+			var nanFormat = /^[XYZ]?\d{5,8}-[A-Z]$/;
+			var nan = document.getElementById("nan").value;
+			nan = nan.toUpperCase();
+		
+			var telefonoa = document.getElementById("telefonoa").value;
+			
+			var date = document.getElementById("jaiotze_data").value;
+			var datePattern = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;;
+			
+			var mail = document.getElementById("emaila").value;
+			var mailFormat = /\S+@\S+\.\S+/;
+
+			var pasahitza = document.getElementById("pasahitza").value;
+			var pasahitzaFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,15}$/;
+
+			if(kontsolaKontagailu >= 10){
+				console.clear();
+				kontsolaKontagailu = 0;
+			}
+			
+			if(izena.length == 0){
+				const alertMessage = "Ez duzu ezer jarri izen-abizenak zatian!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				return false;
+			}
+			else if(!izenaFormat.test(izena)){
+				const alertMessage = "Ezin dira zenbakiak erabili izen-abizenak jartzeko!";
+				alert(alertMessage);
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu = kontsolaKontagailu + 1;
+				return false;
+			}
+			
+			if(nanFormat.test(nan)){
+				zenb = nan.substr(0,nan.length-2);
+				zenb = zenb.replace("X", 0);
+				zenb = zenb.replace("Y", 1);
+				zenb = zenb.replace("Z", 2);
+				letr = nan.substr(nan.length-1, 1);
+				zenb = zenb % 23;
+				letra = "TRWAGMYFPDXBNJZSQVHLCKET";
+				letra = letra.substring(zenb, zenb+1);
+				if (letra != letr) {
+					const alertMessage = "NAN zenbakia txarto dago!";
+					alert(alertMessage);
+					logToFile(alertToLog(alertMessage), artxiboizena);
+					kontsolaKontagailu++;
+					return false;
+				}
+				
+			}else{
+				const alertMessage = "NAN ez du balio!";
 				alert(alertMessage);
 				logToFile(alertToLog(alertMessage), artxiboizena);
 				kontsolaKontagailu++;
 				return false;
 			}
 			
-		}else{
-			const alertMessage = "NAN ez du balio!";
-			alert(alertMessage);
-			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu++;
-			return false;
-		}
-		
-		if (telefonoa.length != 9){
-			const alertMessage = "Telefono zenbakiak bakarrik 9 zenbaki dituzte!";
-			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu++;
-			alert(alertMessage);
-			return false;
-		}
-		if (izenaFormat.test(telefonoa)){
-			const alertMessage = "Bakarrik zenbakiak erabili ahal dira!";
-			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu++;
-			alert(alertMessage);
-			return false;
-		}
-		if (telefonoa < 0){
-			const alertMessage = "Bakarrik zenbaki positiboak erabili ahal dira!";
-			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu++;
-			alert(alertMessage);
-			return false;
-		}
-		
-		var matchArray = date.match(datePattern);
-		if (matchArray == null) {
-			const alertMessage = "Ez da dataren formatua!";
-			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu++;
-			alert(alertMessage);
-			return false;
-		}
-
-		var dateString = date.replace(/\D/g, ""); 
-
-		var year = parseInt(dateString.substr(0, 4));
-		var month = parseInt(dateString.substr(4, 2));
-		var day = parseInt(dateString.substr(6, 2));
-		
-		var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-		if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
-			daysInMonth[1] = 29;
-		}
-
-		if (month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
-			const alertMessage = "Ez da dataren formatua!";
-			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu++;
-			alert(alertMessage);
-			return false;
-		}
-		
-		if (!mailFormat.test(mail)) {
-			const alertMessage = "Emaila ez du balio!";
-			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu++;
-			alert(alertMessage);
-			return false;
-		}
-
-		if (!pasahitzaFormat.test(pasahitza)) {
-			const alertMessage = "Pasahitza gutxienez letra larri bat," +
-			"letra xehe bat, zenbaki bat, sinbolo bat, " + 
-			"8 karaktere eta gehienez 16 karaktere izan behar ditu!";
-			logToFile(alertToLog(alertMessage), artxiboizena);
-			kontsolaKontagailu++;
-			alert(alertMessage);
-			return false;
-		}
-
-		//Konprobaketak egin ondoren eta dena ondo badago, formularioa bidaliko dugu erabiltzailearen datuak aldatzeko
-		
-		let nireForm = document.getElementById("formularioa");
-
-		nireForm.submit();
-
-		return true;
-	}
-
-	document.addEventListener('DOMContentLoaded', function () {
-		var buttonEginda = document.getElementById('buttonEginda');
-
-		if (buttonEginda) {
-			buttonEginda.addEventListener('click', function () {
-				validate();
-			});
-		}
-	});
+			if (telefonoa.length != 9){
+				const alertMessage = "Telefono zenbakiak bakarrik 9 zenbaki dituzte!";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				alert(alertMessage);
+				return false;
+			}
+			if (izenaFormat.test(telefonoa)){
+				const alertMessage = "Bakarrik zenbakiak erabili ahal dira!";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				alert(alertMessage);
+				return false;
+			}
+			if (telefonoa < 0){
+				const alertMessage = "Bakarrik zenbaki positiboak erabili ahal dira!";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				alert(alertMessage);
+				return false;
+			}
 			
-	document.addEventListener('DOMContentLoaded', function () {
-		var buttonHasiera = document.getElementById('buttonHasiera');
+			var matchArray = date.match(datePattern);
+			if (matchArray == null) {
+				const alertMessage = "Ez da dataren formatua!";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				alert(alertMessage);
+				return false;
+			}
 
-		if (buttonHasiera) {
-			buttonHasiera.addEventListener('click', function () {
-				window.location.href = 'hasiera.php';
-			});
+			var dateString = date.replace(/\D/g, ""); 
+
+			var year = parseInt(dateString.substr(0, 4));
+			var month = parseInt(dateString.substr(4, 2));
+			var day = parseInt(dateString.substr(6, 2));
+			
+			var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+			if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
+				daysInMonth[1] = 29;
+			}
+
+			if (month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
+				const alertMessage = "Ez da dataren formatua!";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				alert(alertMessage);
+				return false;
+			}
+			
+			if (!mailFormat.test(mail)) {
+				const alertMessage = "Emaila ez du balio!";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				alert(alertMessage);
+				return false;
+			}
+
+			if (!pasahitzaFormat.test(pasahitza)) {
+				const alertMessage = "Pasahitza gutxienez letra larri bat," +
+				"letra xehe bat, zenbaki bat, sinbolo bat, " + 
+				"8 karaktere eta gehienez 16 karaktere izan behar ditu!";
+				logToFile(alertToLog(alertMessage), artxiboizena);
+				kontsolaKontagailu++;
+				alert(alertMessage);
+				return false;
+			}
+
+			//Konprobaketak egin ondoren eta dena ondo badago, formularioa bidaliko dugu erabiltzailearen datuak aldatzeko
+			
+			let nireForm = document.getElementById("formularioa");
+
+			nireForm.submit();
+
+			return true;
 		}
-	});
+
+		document.addEventListener('DOMContentLoaded', function () {
+			var buttonEginda = document.getElementById('buttonEginda');
+
+			if (buttonEginda) {
+				buttonEginda.addEventListener('click', function () {
+					validate();
+				});
+			}
+		});
+				
+		document.addEventListener('DOMContentLoaded', function () {
+			var buttonHasiera = document.getElementById('buttonHasiera');
+
+			if (buttonHasiera) {
+				buttonHasiera.addEventListener('click', function () {
+					window.location.href = 'hasiera.php';
+				});
+			}
+		});
+
+	} catch {
+		System.err.println("Error. Saiatu berriro geroago mesedez.");
+	}
 
 </script>
