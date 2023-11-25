@@ -1,7 +1,7 @@
 version: '3'
 services:
-    entrega_1:
-        image: entrega_1
+    entrega_2:
+        image: entrega_2
         environment:
             - ALLOW_OVERRIDE=true
         ports:
