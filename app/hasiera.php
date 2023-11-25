@@ -2,7 +2,7 @@
 
 	ini_set('display_errors', 0);
 
-	// Configurar SameSite=Strict
+	//SameSite=Strict konfiguratu
     session_get_cookie_params()['samesite'] = 'Strict';
 
 	//HttpOnly ezarri erasoak saihesteko
