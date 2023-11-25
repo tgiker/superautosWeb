@@ -47,7 +47,7 @@
                 $pasahitza = $_POST['pasahitza'];
                 $erabiltzaileIzena = $_POST['erabiltzaileIzena'];
 
-                //pasahitza laburtuko (hash) dugu
+                //pasahitza laburtuko (hash) dugu eta salt gehituko dugu
                 $pasahitza_hash = password_hash($pasahitza, PASSWORD_BCRYPT);
 
                 //kontsulta prestatu
