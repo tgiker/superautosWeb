@@ -60,6 +60,16 @@ Amaitzeko kontainerrak amatatu nahi baditugu honako hau jarriko dugu kontsolan:
 $ docker-compose stop
 ```
 
+# Jadanik sortutako erabiltzaileak probak egiteko web orrialdean
+
+Erabiltzaile administratzailea:
+erabiltzaile izena: admin
+pasahitza: Admin777@
+
+Erabiltzaile normala:
+erabiltzaile izena: juanbelio
+pasahitza: Juanbelio777@
+
 # Docker LAMP
 Linux + Apache + MariaDB (MySQL) + PHP 7.2 on Docker Compose. Mod_rewrite enabled by default.
 
