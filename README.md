@@ -12,7 +12,7 @@ Iker Tranchand, Iñigo Dueñas, Ander Algar, Adrián Fernández, Oier Urquijo et
 
 Lehenengo entrega_1 irudia sortu beharko dugu superautosweb direktorioan Dockerfile fitxategia erabiliz. Horretarako superautosweb direktorio barruan gaudenean hurrengo komandoa idatzi beharko dugu: 
 ```bash
-$ docker build -t entrega_1 .
+$ docker build -t entrega_2 .
 ```
 
 Ondoren hurrengo komandoa idatziko dugu docker kontainerrak hasieratzeko:
